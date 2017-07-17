@@ -4,23 +4,19 @@
 The project spring-cloud-sleuth does not provided a instrumentation for spring-rabbit. In this project we implement this instrumentation.
 
 # Compatibility
-| spring-cloud-sleuth-amqp-starter  | spring-cloud-sleuth | spring-rabbit |
+| spring-cloud-sleuth-amqp          | spring-cloud-sleuth | spring-rabbit |
 | --------------------------------- | ------------------- | ------------- |
-| 1.0.RELEASE                       | 1.2.1.RELEASE       | 1.7.3.RELEASE |
+| 0.8-SNAPSHOT                      | 1.2.1.RELEASE       | 1.7.3.RELEASE |
 
 # Usage
 Add the following dependency to project:
 ```
 <dependency>
   <groupId>com.netshoes</groupId>
-  <artifactId>spring-cloud-sleuth-amqp-starter</artifactId>
+  <artifactId>spring-cloud-sleuth-amqp</artifactId>
   <version>1.0.RELEASE</version>
 </dependency>
 ```
-
-# Disabling
-If you want disable only this sleuth instrumentation set `spring.sleuth.amqp.enabled` to `false`.
-
 
 # Contributing
 Pull request are welcome. This project is not supported by Spring Framework Team and has its own rules:
