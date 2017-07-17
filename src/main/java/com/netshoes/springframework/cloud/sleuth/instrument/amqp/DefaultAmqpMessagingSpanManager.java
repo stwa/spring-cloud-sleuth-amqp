@@ -32,19 +32,10 @@ public class DefaultAmqpMessagingSpanManager implements AmqpMessagingSpanManager
   }
 
   @Override
-  public Span extractAndContinueSpan(Message message) {
-    final Span span = extractor.joinTrace(message);
-    //TODO
-    final Span newSpan = tracer.createSpan(null, span);
-    return newSpan;
-  }
-
-  @Override
   public Span extractAndContinueSpan(Message message, String[] queues) {
     final Span span = extractor.joinTrace(message);
-    final String spanName = queueNamesSeparetedByComma(queues);
-    final Span newSpan = tracer.createSpan(spanName, span);
-    return newSpan;
+    final String spanName = queueNamesSeparatedByComma(queues);
+    return tracer.createSpan(spanName, span);
   }
 
   @Override
@@ -54,7 +45,7 @@ public class DefaultAmqpMessagingSpanManager implements AmqpMessagingSpanManager
     return span;
   }
 
-  private String queueNamesSeparetedByComma(String[] queues) {
+  private String queueNamesSeparatedByComma(String[] queues) {
     final StringJoiner joiner = new StringJoiner(",");
     for (String queue : queues) {
       joiner.add(queue);

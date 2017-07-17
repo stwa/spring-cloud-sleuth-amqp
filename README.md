@@ -1,6 +1,6 @@
 ![Build status](https://travis-ci.org/netshoes/spring-cloud-sleuth-amqp.svg?branch=master "Logo Title Text 1")
 
-# Motivation
+# Why?
 The project spring-cloud-sleuth does not provided a instrumentation for spring-rabbit. In this project we implement this instrumentation.
 
 # Compatibility

@@ -9,8 +9,6 @@ import org.springframework.cloud.sleuth.Span;
  * @author André Ignacio
  */
 public interface AmqpMessagingSpanManager {
-  Span extractAndContinueSpan(Message message);
-
   Span extractAndContinueSpan(Message message, String[] queueNames);
 
   Span injectCurrentSpan(Message message);

@@ -12,13 +12,13 @@ import org.springframework.amqp.core.Message;
  * @author André Ignacio
  */
 public class AmqpMessagingBeforeReceiveInterceptor implements MethodInterceptor {
-
+  private static final String[] QUEUE_NAMES = new String[] {"amqp"};
   private final AmqpMessagingSpanManager spanManager;
 
   /**
    * Creates a new instance.
    *
-   * @param spanManager AMQP span messaging manager
+   * @param spanManager AMQP messaging span manager
    */
   public AmqpMessagingBeforeReceiveInterceptor(AmqpMessagingSpanManager spanManager) {
     this.spanManager = spanManager;
@@ -27,12 +27,15 @@ public class AmqpMessagingBeforeReceiveInterceptor implements MethodInterceptor 
   @Override
   public Object invoke(MethodInvocation invocation) throws Throwable {
     final Message message = getMessageArgument(invocation.getArguments());
+    if (message == null) {
+      throw new IllegalStateException("Message cannot be null");
+    }
     before(message);
     return invocation.proceed();
   }
 
   private void before(Message message) {
-    spanManager.extractAndContinueSpan(message);
+    spanManager.extractAndContinueSpan(message, QUEUE_NAMES);
   }
 
   private Message getMessageArgument(Object[] args) {
