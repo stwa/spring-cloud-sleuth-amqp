@@ -5,7 +5,7 @@ import org.aopalliance.intercept.MethodInvocation;
 import org.springframework.amqp.core.Message;
 
 /**
- * Interceptor responsible for call {@link AmqpMessagingSpanManager#extractAndContinueSpan(Message)}
+ * Interceptor responsible for call {@link AmqpMessagingSpanManager#extractAndContinueSpan(Message, String[])}
  * with the current {@link Message}.
  *
  * @see AmqpMessagingSpanManager
