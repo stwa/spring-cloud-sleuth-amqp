@@ -14,7 +14,7 @@ Add the following dependency to project:
 <dependency>
   <groupId>com.netshoes</groupId>
   <artifactId>spring-cloud-sleuth-amqp</artifactId>
-  <version>1.0.RELEASE</version>
+  <version>0.8-SNAPSHOT</version>
 </dependency>
 ```
 
