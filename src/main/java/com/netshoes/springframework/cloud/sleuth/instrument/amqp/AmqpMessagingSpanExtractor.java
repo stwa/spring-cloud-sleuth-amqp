@@ -61,10 +61,7 @@ public class AmqpMessagingSpanExtractor implements SpanExtractor<Message> {
     spanBuilder.traceIdHigh(traceId.length() == 32 ? Span.hexToId(traceId, 0) : 0);
     spanBuilder.traceId(Span.hexToId(traceId));
 
-    long spanId =
-        hasHeader(accessor, spanIdHeader)
-            ? Span.hexToId(getHeader(accessor, spanIdHeader))
-            : this.random.nextLong();
+    final long spanId = Span.hexToId(getHeader(accessor, spanIdHeader));
     spanBuilder = spanBuilder.spanId(spanId);
     spanBuilder.exportable(Span.SPAN_SAMPLED.equals(getHeader(accessor, spanSampledHeader)));
     String processId = getHeader(accessor, spanProcessIdHeader);

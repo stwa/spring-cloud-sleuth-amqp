@@ -37,7 +37,7 @@ public class AmqpMessagingSpanInjector implements SpanInjector {
     final AmqpMessageHeaderAccessor accessor = AmqpMessageHeaderAccessor.getAccessor(message);
     if (span == null) {
       if (!isSampled(message, Span.SAMPLED_NAME)
-          || !isSampled(message, TraceMessageHeaders.SAMPLED_NAME)) {
+          && !isSampled(message, TraceMessageHeaders.SAMPLED_NAME)) {
         accessor.setHeader(TraceMessageHeaders.SAMPLED_NAME, Span.SPAN_NOT_SAMPLED);
         return;
       }
