@@ -1,4 +1,6 @@
-![Build status](https://travis-ci.org/netshoes/spring-cloud-sleuth-amqp.svg?branch=master "Logo Title Text 1")
+[![Build Status](https://travis-ci.org/netshoes/spring-cloud-sleuth-amqp.svg?branch=master)](https://travis-ci.org/netshoes/spring-cloud-sleuth-amqp)
+[![Coverage Status](https://coveralls.io/repos/netshoes/spring-cloud-sleuth-amqp/badge.svg?branch=master&service=github)](https://coveralls.io/github/netshoes/spring-cloud-sleuth-amqp?branch=master)
+[![License Apache2](https://img.shields.io/hexpm/l/plug.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 
 # Why?
 The project spring-cloud-sleuth does not provided a instrumentation for spring-rabbit. In this project we implement this instrumentation.
