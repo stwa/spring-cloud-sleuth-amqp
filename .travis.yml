@@ -14,7 +14,7 @@ env:
     - secure: "JhFnkU1wftMxepC254psBi1jQHW9Or/1RRTca3QzZqx3TjCSNOcHY+eRKa8UhZs/5ZKAdX+zb9kLorAyVdPv/ym6sYCzRLQFYUKGBK5+flj0ZAlxIAN2QVNevpU6qEo5GOsRMKqk5SHetJc0xxQmyiXs9eOVgcnXfcOiZaE+nLp1T68kdOvDVvaenHa+0zXXXqu8dQRzkVcag8/GkxqadUxa/CQs3Ygkw+HXPYyZpkNC1TWuxBL+lnSkN+RA+yi4dp6R/fv1rrVJ73IM9Ey2vvduQ+HdD3xXadb2r8nTOz0alcOpG2e/DowjTMtkdoL9wQHMknaQOuH0ZF95QZMQApHD6DPIAqNX+TlPgGgyNpmqgPKLwEIWzuDLjoSlEy1qfS8GXh9BkUFjMQQdE0Cjw3EEWsDlaA0dpbZzWnfiLMFefBjITbxz9ZPtEUcunjtU2sKOY68SMBp6lR07ZK9I8yfBsJBsxbDzyhZ4OHExcYFxpgLJXJyJJI3m+yemu/EtX31fYYVR/rz/63J6BljR5qf76DjG8Yx4/pZxXjtaEfnqNf7Ep1kcCz9LG0aET4X2Ap1YAYu0i46LcjohRucjp9KEb88H9qE8+yIpuepRXC87AJzODzsaN5192lgTASdQPNV+9lSdBdGu2aczSVLZ1Bu6mCzGwJqHFkA/YRODleQ="
     - # ^^ COVERALLS_REPO_TOKEN
 install: mvn install -P !build-extras -DskipTests=true -Dmaven.javadoc.skip=true -B -V
-script: mvn test coveralls:report -P !build-extras -B -DrepoToken=$COVERALLS_REPO_TOKEN
+script: mvn test coveralls:report -DrepoToken=$COVERALLS_REPO_TOKEN -P !build-extras -B
 
 cache:
   directories:
