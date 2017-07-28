@@ -8,6 +8,7 @@ import org.springframework.amqp.core.MessageProperties;
 import org.springframework.cloud.sleuth.Span;
 import org.springframework.cloud.sleuth.SpanInjector;
 import org.springframework.cloud.sleuth.TraceKeys;
+import org.springframework.cloud.sleuth.TraceKeys.Message.Payload;
 import org.springframework.cloud.sleuth.instrument.messaging.TraceMessageHeaders;
 import org.springframework.util.StringUtils;
 
@@ -98,7 +99,7 @@ public class AmqpMessagingSpanInjector implements SpanInjector {
       final MessageProperties messageProperties = message.getMessageProperties();
       final Map<String, Object> headers = messageProperties.getHeaders();
       if (headers.containsKey(name)) {
-        String key = traceKeys.getMessage().getPrefix() + name.toLowerCase();
+        final String key = traceKeys.getMessage().getPrefix() + name.toLowerCase();
         Object value = headers.get(name);
         if (value == null) {
           value = "null";
@@ -109,23 +110,12 @@ public class AmqpMessagingSpanInjector implements SpanInjector {
     addPayloadAnnotations(traceKeys, message.getBody(), span);
   }
 
-  private void addPayloadAnnotations(TraceKeys traceKeys, Object payload, Span span) {
+  private void addPayloadAnnotations(TraceKeys traceKeys, byte[] payload, Span span) {
     if (payload != null) {
+      final Payload traceKeyPayloadMessage = traceKeys.getMessage().getPayload();
       tagIfEntryMissing(
-          span,
-          traceKeys.getMessage().getPayload().getType(),
-          payload.getClass().getCanonicalName());
-      if (payload instanceof String) {
-        tagIfEntryMissing(
-            span,
-            traceKeys.getMessage().getPayload().getSize(),
-            String.valueOf(((String) payload).length()));
-      } else if (payload instanceof byte[]) {
-        tagIfEntryMissing(
-            span,
-            traceKeys.getMessage().getPayload().getSize(),
-            String.valueOf(((byte[]) payload).length));
-      }
+          span, traceKeyPayloadMessage.getType(), payload.getClass().getCanonicalName());
+      tagIfEntryMissing(span, traceKeyPayloadMessage.getSize(), String.valueOf((payload).length));
     }
   }
 
