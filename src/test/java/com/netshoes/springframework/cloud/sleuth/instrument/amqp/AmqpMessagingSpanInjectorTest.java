@@ -1,6 +1,6 @@
 package com.netshoes.springframework.cloud.sleuth.instrument.amqp;
 
-import com.sun.tools.javac.util.List;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 import org.junit.Assert;
@@ -117,8 +117,7 @@ public class AmqpMessagingSpanInjectorTest {
   @Test
   public void testInjectWithTrackKeysSuccess() {
     final TraceKeys traceKeys = new TraceKeys();
-    final Collection<String> traceKeyMessageHeaders =
-        List.from(new String[] {"CUSTOM_HEADER", "NULL_HEADER"});
+    final Collection<String> traceKeyMessageHeaders = Arrays.asList("CUSTOM_HEADER", "NULL_HEADER");
     final TraceKeys.Message traceKeyMessage = new TraceKeys.Message();
     traceKeyMessage.setHeaders(traceKeyMessageHeaders);
     traceKeys.setMessage(traceKeyMessage);
