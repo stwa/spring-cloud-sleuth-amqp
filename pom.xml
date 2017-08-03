@@ -37,7 +37,6 @@
     <developerConnection>scm:git:ssh://github.com/netshoes/spring-cloud-sleuth-amqp.git
     </developerConnection>
     <url>https://github.com/netshoes/spring-cloud-sleuth-amqp</url>
-    <tag>spring-cloud-sleuth-amqp-0.8</tag>
   </scm>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
