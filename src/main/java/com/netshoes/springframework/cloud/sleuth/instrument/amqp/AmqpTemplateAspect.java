@@ -7,14 +7,14 @@ import org.springframework.amqp.core.Message;
 
 /**
  * Aspect responsible for get the current {@link Message} before execution of {@link
- * org.springframework.amqp.rabbit.core.RabbitTemplate} methods and invoke {@link
+ * org.springframework.amqp.core.AmqpTemplate} methods and invoke {@link
  * AmqpMessagingSpanManager#injectCurrentSpan(Message)}.
  *
  * @see AmqpMessagingSpanInjector
  * @author André Ignacio
  */
 @Aspect
-public class RabbitTemplateAspect {
+public class AmqpTemplateAspect {
   private final AmqpMessagingSpanManager spanManager;
 
   /**
@@ -22,11 +22,11 @@ public class RabbitTemplateAspect {
    *
    * @param spanManager Span manager for AMQP messaging
    */
-  public RabbitTemplateAspect(AmqpMessagingSpanManager spanManager) {
+  public AmqpTemplateAspect(AmqpMessagingSpanManager spanManager) {
     this.spanManager = spanManager;
   }
 
-  @Around("execution(* org.springframework.amqp.rabbit.core.RabbitTemplate.send(..))")
+  @Around("execution(* org.springframework.amqp.core.AmqpTemplate.send(..))")
   public void executeAroundSend(ProceedingJoinPoint call) throws Throwable {
     final Object[] args = call.getArgs();
     final Message message = getMessageArgument(args);
@@ -34,7 +34,7 @@ public class RabbitTemplateAspect {
     call.proceed(args);
   }
 
-  @Around("execution(* org.springframework.amqp.rabbit.core.RabbitTemplate.sendAndReceive(..))")
+  @Around("execution(* org.springframework.amqp.core.AmqpTemplate.sendAndReceive(..))")
   public void executeAroundSendAndReceive(ProceedingJoinPoint call) throws Throwable {
     final Object[] args = call.getArgs();
     final Message message = getMessageArgument(args);
