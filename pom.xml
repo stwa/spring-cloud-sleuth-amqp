@@ -34,7 +34,7 @@
   </organization>
   <scm>
     <connection>scm:git:git://github.com/netshoes/spring-cloud-sleuth-amqp.git</connection>
-    <developerConnection>scm:git:ssh://github.com/netshoes/spring-cloud-sleuth-amqp.git
+    <developerConnection>scm:git:git://github.com/netshoes/spring-cloud-sleuth-amqp.git
     </developerConnection>
     <url>https://github.com/netshoes/spring-cloud-sleuth-amqp</url>
     <tag>spring-cloud-sleuth-amqp-0.8</tag>
