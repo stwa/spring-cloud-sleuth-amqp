@@ -124,6 +124,7 @@
         <version>${maven.plugin.release.version}</version>
         <configuration>
           <tagNameFormat>v@{project.version}</tagNameFormat>
+          <releaseProfiles>sign</releaseProfiles>
         </configuration>
       </plugin>
       <plugin>
