@@ -52,8 +52,7 @@
     <spring.cloud.sleuth.version>1.2.1.RELEASE</spring.cloud.sleuth.version>
     <spring-rabbit.version>1.7.3.RELEASE</spring-rabbit.version>
 
-    <!-- Versions Plguins -->
-    <maven.plugin.surefire.version>2.7.2</maven.plugin.surefire.version>
+    <!-- Versions Plugins -->
     <maven.plugin.gpg.version>1.5</maven.plugin.gpg.version>
     <maven.plugin.surefire.version>2.7.2</maven.plugin.surefire.version>
     <maven.plugin.resources.version>2.4</maven.plugin.resources.version>
