@@ -3,14 +3,11 @@ package com.netshoes.springframework.cloud.sleuth.instrument.amqp.mock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.AmqpException;
-import org.springframework.amqp.core.AmqpTemplate;
-import org.springframework.amqp.core.Message;
-import org.springframework.amqp.core.MessagePostProcessor;
-import org.springframework.amqp.core.ReceiveAndReplyCallback;
-import org.springframework.amqp.core.ReplyToAddressCallback;
+import org.springframework.amqp.core.*;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
 /**
- * Mocked implementation for a {@link AmqpTemplate}.
+ * Mocked implementation for a {@link RabbitTemplate}.
  *
  * @version 1.0
  */

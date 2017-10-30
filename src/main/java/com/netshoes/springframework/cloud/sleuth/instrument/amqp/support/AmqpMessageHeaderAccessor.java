@@ -1,9 +1,10 @@
 package com.netshoes.springframework.cloud.sleuth.instrument.amqp.support;
 
-import java.util.Map;
 import org.springframework.amqp.core.Message;
 import org.springframework.cloud.sleuth.Span;
 import org.springframework.util.ObjectUtils;
+
+import java.util.Map;
 
 /**
  * Utility class for access headers from AMQP message. Do not register this class as a bean. This

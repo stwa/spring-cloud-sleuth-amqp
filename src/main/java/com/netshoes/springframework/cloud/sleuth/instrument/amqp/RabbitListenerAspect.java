@@ -10,8 +10,7 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 
 /**
  * This Aspect intercept methods annotated with {@link RabbitListener} and invoke {@link
- * AmqpMessagingSpanManager#extractAndContinueSpan(Message, String[])} with {@link Message} and
- * queue names.
+ * AmqpMessagingSpanManager#beforeHandle(Message, String[])} with {@link Message} and queue names.
  *
  * @author André Ignacio
  */
@@ -33,14 +32,16 @@ public class RabbitListenerAspect {
     final Object[] args = call.getArgs();
     final Message message = getMessageArgument(args);
     final String[] queueNames = getQueueNames(call);
-    before(message, queueNames);
-    call.proceed();
-  }
-
-  private void before(Message message, String[] queueNames) {
     if (message != null) {
-      spanManager.extractAndContinueSpan(message, queueNames);
+      spanManager.beforeHandle(message, queueNames);
     }
+    try {
+      call.proceed();
+    } catch (Exception e) {
+      spanManager.afterHandle(e);
+      throw e;
+    }
+    spanManager.afterHandle(null);
   }
 
   /**

@@ -5,7 +5,7 @@ import org.aopalliance.intercept.MethodInvocation;
 import org.springframework.amqp.core.Message;
 
 /**
- * Interceptor responsible for call {@link AmqpMessagingSpanManager#extractAndContinueSpan(Message, String[])}
+ * Interceptor responsible for call {@link AmqpMessagingSpanManager#beforeHandle(Message, String[])}
  * with the current {@link Message}.
  *
  * @see AmqpMessagingSpanManager
@@ -35,7 +35,7 @@ public class AmqpMessagingBeforeReceiveInterceptor implements MethodInterceptor 
   }
 
   private void before(Message message) {
-    spanManager.extractAndContinueSpan(message, QUEUE_NAMES);
+    spanManager.beforeHandle(message, QUEUE_NAMES);
   }
 
   private Message getMessageArgument(Object[] args) {

@@ -1,18 +1,21 @@
 package com.netshoes.springframework.cloud.sleuth.instrument.amqp;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.mockito.Matchers;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.amqp.core.Message;
+import org.springframework.amqp.core.MessageProperties;
 import org.springframework.cloud.sleuth.Span;
 import org.springframework.cloud.sleuth.Tracer;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.*;
 
 /**
  * Unit tests for {@link DefaultAmqpMessagingSpanManager}.
@@ -34,54 +37,102 @@ public class DefaultAmqpMessagingSpanManagerTest {
   }
 
   @Test
-  public void testExtractAndContinueSpanOneQueuesSuccess() {
-    final Span currentSpan = Mockito.mock(Span.class);
-    Mockito.when(extractor.joinTrace(Matchers.any(Message.class))).thenReturn(currentSpan);
+  public void testExtractAndContinueSpanOneQueueSuccess() {
+    final Span currentSpan = mock(Span.class);
+    when(extractor.joinTrace(any(Message.class))).thenReturn(currentSpan);
 
-    final Span newSpan = Mockito.mock(Span.class);
-    Mockito.when(tracer.createSpan(Matchers.anyString(), Matchers.eq(currentSpan)))
-        .thenReturn(newSpan);
+    final Span newSpan = mock(Span.class);
+    when(tracer.continueSpan(eq(currentSpan))).thenReturn(newSpan);
 
     final Message message = new Message("Test".getBytes(), null);
     final String[] queueNames = new String[] {"queue"};
-    final Span span = spanManager.extractAndContinueSpan(message, queueNames);
+    final Span span = spanManager.beforeHandle(message, queueNames);
 
-    Mockito.verify(extractor).joinTrace(Matchers.eq(message));
-    Mockito.verify(tracer).createSpan(queueNameCaptor.capture(), Matchers.eq(currentSpan));
+    verify(currentSpan).logEvent(eq(Span.SERVER_RECV));
+    verify(extractor).joinTrace(eq(message));
+    verify(tracer).continueSpan(eq(currentSpan));
 
-    Assert.assertEquals(newSpan, span);
-    Assert.assertEquals("queue", queueNameCaptor.getValue());
+    assertEquals(newSpan, span);
   }
 
   @Test
   public void testExtractAndContinueSpanTwoQueuesSuccess() {
-    final Span currentSpan = Mockito.mock(Span.class);
-    Mockito.when(extractor.joinTrace(Matchers.any(Message.class))).thenReturn(currentSpan);
+    final Span currentSpan = mock(Span.class);
+    when(extractor.joinTrace(any(Message.class))).thenReturn(currentSpan);
 
-    final Span newSpan = Mockito.mock(Span.class);
-    Mockito.when(tracer.createSpan(Matchers.anyString(), Matchers.eq(currentSpan)))
-        .thenReturn(newSpan);
+    final Span newSpan = mock(Span.class);
+    when(tracer.continueSpan(eq(currentSpan))).thenReturn(newSpan);
 
     final Message message = new Message("Test".getBytes(), null);
     final String[] queueNames = new String[] {"queue1", "queue2"};
-    final Span span = spanManager.extractAndContinueSpan(message, queueNames);
+    final Span span = spanManager.beforeHandle(message, queueNames);
 
-    Mockito.verify(extractor).joinTrace(Matchers.eq(message));
-    Mockito.verify(tracer).createSpan(queueNameCaptor.capture(), Matchers.eq(currentSpan));
+    verify(currentSpan).logEvent(eq(Span.SERVER_RECV));
+    verify(extractor).joinTrace(eq(message));
+    verify(tracer).continueSpan(eq(currentSpan));
 
-    Assert.assertEquals(newSpan, span);
-    Assert.assertEquals("queue1,queue2", queueNameCaptor.getValue());
+    assertEquals(newSpan, span);
   }
 
   @Test
-  public void testInjectCurrentSpanSuccess() {
-    final Span currentSpan = Mockito.mock(Span.class);
-    Mockito.when(tracer.getCurrentSpan()).thenReturn(currentSpan);
+  public void testInjectCurrentSpanOnClientSendFromMessage() {
+    when(tracer.isTracing()).thenReturn(false);
 
-    final Message message = new Message("Test".getBytes(), null);
-    final Span span = spanManager.injectCurrentSpan(message);
+    final Span parentSpan = mock(Span.class, "parentSpan");
+    final Message message = new Message("Test".getBytes(), new MessageProperties());
+    when(extractor.joinTrace(eq(message))).thenReturn(parentSpan);
 
-    Mockito.verify(injector).inject(Matchers.eq(currentSpan), Matchers.eq(message));
-    Assert.assertEquals(currentSpan, span);
+    final Span newSpan = mock(Span.class, "newSpan");
+    when(tracer.createSpan(anyString(), eq(parentSpan))).thenReturn(newSpan);
+
+    final Span span = spanManager.beforeSend(message, "exchange");
+
+    verify(injector).inject(eq(newSpan), eq(message));
+    assertEquals(newSpan, span);
+
+    verify(newSpan).logEvent(eq(Span.CLIENT_SEND));
+  }
+
+  @Test
+  public void testInjectCurrentSpanOnServerReceiveFromMessage() {
+    when(tracer.isTracing()).thenReturn(false);
+
+    final Span parentSpan = mock(Span.class, "parentSpan");
+    final MessageProperties messageProperties = new MessageProperties();
+    messageProperties.setHeader("messageSent", Boolean.TRUE.toString());
+
+    final Message message = new Message("Test".getBytes(), messageProperties);
+    when(extractor.joinTrace(eq(message))).thenReturn(parentSpan);
+
+    final Span newSpan = mock(Span.class, "newSpan");
+    when(tracer.createSpan(anyString(), eq(parentSpan))).thenReturn(newSpan);
+
+    final Span span = spanManager.beforeSend(message, "exchange");
+
+    verify(injector).inject(eq(newSpan), eq(message));
+    assertEquals(newSpan, span);
+
+    verify(newSpan).logEvent(eq(Span.SERVER_RECV));
+  }
+
+  @Test
+  public void testInjectCurrentSpanOnServerReceiveFromTracer() {
+    final Span currentSpan = mock(Span.class, "currentSpan");
+    when(tracer.getCurrentSpan()).thenReturn(currentSpan);
+    when(tracer.isTracing()).thenReturn(true);
+
+    final Span newSpan = mock(Span.class, "newSpan");
+    when(tracer.createSpan(anyString(), eq(currentSpan))).thenReturn(newSpan);
+
+    final MessageProperties messageProperties = new MessageProperties();
+    messageProperties.setHeader("messageSent", Boolean.TRUE.toString());
+
+    final Message message = new Message("Test".getBytes(), messageProperties);
+    final Span span = spanManager.beforeSend(message, "exchange");
+
+    verify(injector).inject(eq(newSpan), eq(message));
+    assertEquals(newSpan, span);
+
+    verify(newSpan).logEvent(eq(Span.SERVER_RECV));
   }
 }

@@ -1,7 +1,7 @@
 package com.netshoes.springframework.cloud.sleuth.instrument.amqp;
 
-import com.netshoes.springframework.cloud.sleuth.instrument.amqp.mock.AmqpTemplateMock;
 import com.netshoes.springframework.cloud.sleuth.instrument.amqp.mock.RabbitListenerMock;
+import com.netshoes.springframework.cloud.sleuth.instrument.amqp.mock.AmqpTemplateMock;
 import org.mockito.Mockito;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.boot.SpringBootConfiguration;

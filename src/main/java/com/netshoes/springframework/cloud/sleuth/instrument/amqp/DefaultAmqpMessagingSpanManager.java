@@ -1,9 +1,11 @@
 package com.netshoes.springframework.cloud.sleuth.instrument.amqp;
 
-import java.util.StringJoiner;
+import com.netshoes.springframework.cloud.sleuth.instrument.amqp.support.AmqpMessageHeaderAccessor;
 import org.springframework.amqp.core.Message;
+import org.springframework.cloud.sleuth.Log;
 import org.springframework.cloud.sleuth.Span;
 import org.springframework.cloud.sleuth.Tracer;
+import org.springframework.cloud.sleuth.util.ExceptionUtils;
 
 /**
  * Default implementation for {@link AmqpMessagingSpanManager} who uses {@link
@@ -13,6 +15,7 @@ import org.springframework.cloud.sleuth.Tracer;
  * @author André Ignacio
  */
 public class DefaultAmqpMessagingSpanManager implements AmqpMessagingSpanManager {
+  private static final String MESSAGE_SENT_FROM_CLIENT = "messageSent";
   private final AmqpMessagingSpanExtractor extractor;
   private final AmqpMessagingSpanInjector injector;
   private final Tracer tracer;
@@ -32,24 +35,72 @@ public class DefaultAmqpMessagingSpanManager implements AmqpMessagingSpanManager
   }
 
   @Override
-  public Span extractAndContinueSpan(Message message, String[] queues) {
-    final Span span = extractor.joinTrace(message);
-    final String spanName = queueNamesSeparatedByComma(queues);
-    return tracer.createSpan(spanName, span);
+  public void afterHandle(Exception ex) {
+    Span spanFromHeader = tracer.getCurrentSpan();
+    if (spanFromHeader != null) {
+      spanFromHeader.logEvent(Span.SERVER_SEND);
+      addErrorTag(ex);
+    }
+    if (tracer.isTracing()) {
+      tracer.detach(spanFromHeader);
+    }
   }
 
   @Override
-  public Span injectCurrentSpan(Message message) {
-    final Span span = tracer.getCurrentSpan();
+  public Span beforeHandle(Message message, String[] queues) {
+    final Span span = extractor.joinTrace(message);
+    if (span != null) {
+      span.logEvent(Span.SERVER_RECV);
+    }
+    return tracer.continueSpan(span);
+  }
+
+  @Override
+  public Span beforeSend(Message message, String exchange) {
+    final Span parentSpan = tracer.isTracing() ? tracer.getCurrentSpan() : buildSpan(message);
+    final Span span = tracer.createSpan(exchange, parentSpan);
+    final AmqpMessageHeaderAccessor accessor = AmqpMessageHeaderAccessor.getAccessor(message);
+    if (accessor.hasHeader(MESSAGE_SENT_FROM_CLIENT)) {
+      span.logEvent(Span.SERVER_RECV);
+    } else {
+      span.logEvent(Span.CLIENT_SEND);
+      accessor.setHeader(MESSAGE_SENT_FROM_CLIENT, Boolean.TRUE.toString());
+    }
     injector.inject(span, message);
     return span;
   }
 
-  private String queueNamesSeparatedByComma(String[] queues) {
-    final StringJoiner joiner = new StringJoiner(",");
-    for (String queue : queues) {
-      joiner.add(queue);
+  @Override
+  public void afterSend(Exception ex) {
+    final Span currentSpan = tracer.getCurrentSpan();
+    if (containsServerReceived(currentSpan)) {
+      currentSpan.logEvent(Span.SERVER_SEND);
+    } else if (currentSpan != null) {
+      currentSpan.logEvent(Span.CLIENT_RECV);
     }
-    return joiner.toString();
+    addErrorTag(ex);
+    tracer.close(currentSpan);
+  }
+
+  private boolean containsServerReceived(Span span) {
+    if (span == null) {
+      return false;
+    }
+    for (Log log : span.logs()) {
+      if (Span.SERVER_RECV.equals(log.getEvent())) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private Span buildSpan(Message message) {
+    return extractor.joinTrace(message);
+  }
+
+  private void addErrorTag(Exception ex) {
+    if (ex != null) {
+      tracer.addTag(Span.SPAN_ERROR_TAG_NAME, ExceptionUtils.getExceptionMessage(ex));
+    }
   }
 }

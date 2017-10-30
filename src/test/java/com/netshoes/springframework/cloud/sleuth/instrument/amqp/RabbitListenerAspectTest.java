@@ -34,7 +34,7 @@ public class RabbitListenerAspectTest {
     rabbitListenerMock.onMessage(message);
 
     Mockito.verify(amqpMessagingSpanManager)
-        .extractAndContinueSpan(Matchers.eq(message), captor.capture());
+        .beforeHandle(Matchers.eq(message), captor.capture());
 
     final String[] queues = captor.getValue();
     Assert.assertEquals("test-queue", queues[0]);

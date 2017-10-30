@@ -40,7 +40,7 @@ public class AmqpMessagingBeforeReceiveInterceptorTest {
     Mockito.verify(invocation).proceed();
 
     Mockito.verify(spanManager)
-        .extractAndContinueSpan(Matchers.eq(message), queueNamesCaptor.capture());
+        .beforeHandle(Matchers.eq(message), queueNamesCaptor.capture());
     Assert.assertEquals("amqp", queueNamesCaptor.getValue()[0]);
   }
 
@@ -53,7 +53,7 @@ public class AmqpMessagingBeforeReceiveInterceptorTest {
     interceptor.invoke(invocation);
 
     Mockito.verify(spanManager)
-        .extractAndContinueSpan(Matchers.eq(message), queueNamesCaptor.capture());
+        .beforeHandle(Matchers.eq(message), queueNamesCaptor.capture());
     Mockito.verify(invocation).proceed();
 
     Assert.assertEquals("amqp", queueNamesCaptor.getValue()[0]);
