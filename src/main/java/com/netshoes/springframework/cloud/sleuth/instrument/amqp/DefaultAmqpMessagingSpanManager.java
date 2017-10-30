@@ -36,13 +36,13 @@ public class DefaultAmqpMessagingSpanManager implements AmqpMessagingSpanManager
 
   @Override
   public void afterHandle(Exception ex) {
-    Span spanFromHeader = tracer.getCurrentSpan();
-    if (spanFromHeader != null) {
-      spanFromHeader.logEvent(Span.SERVER_SEND);
+    final Span currentSpan = tracer.getCurrentSpan();
+    if (currentSpan != null) {
+      currentSpan.logEvent(Span.SERVER_SEND);
       addErrorTag(ex);
     }
     if (tracer.isTracing()) {
-      tracer.detach(spanFromHeader);
+      tracer.detach(currentSpan);
     }
   }
 

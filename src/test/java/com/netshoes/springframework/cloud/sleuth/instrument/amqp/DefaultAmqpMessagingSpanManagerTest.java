@@ -9,8 +9,13 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;
+import org.springframework.cloud.sleuth.Log;
 import org.springframework.cloud.sleuth.Span;
 import org.springframework.cloud.sleuth.Tracer;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
@@ -37,7 +42,7 @@ public class DefaultAmqpMessagingSpanManagerTest {
   }
 
   @Test
-  public void testExtractAndContinueSpanOneQueueSuccess() {
+  public void testBeforeHandleWithOneQueue() {
     final Span currentSpan = mock(Span.class);
     when(extractor.joinTrace(any(Message.class))).thenReturn(currentSpan);
 
@@ -56,7 +61,7 @@ public class DefaultAmqpMessagingSpanManagerTest {
   }
 
   @Test
-  public void testExtractAndContinueSpanTwoQueuesSuccess() {
+  public void testBeforeHandleWithTwoQueues() {
     final Span currentSpan = mock(Span.class);
     when(extractor.joinTrace(any(Message.class))).thenReturn(currentSpan);
 
@@ -75,7 +80,41 @@ public class DefaultAmqpMessagingSpanManagerTest {
   }
 
   @Test
-  public void testInjectCurrentSpanOnClientSendFromMessage() {
+  public void testAfterHandleWithCurrentSpanAndWithoutException() {
+    final Span currentSpan = mock(Span.class, "currentSpan");
+    when(tracer.isTracing()).thenReturn(true);
+    when(tracer.getCurrentSpan()).thenReturn(currentSpan);
+
+    spanManager.afterHandle(null);
+
+    verify(tracer).detach(eq(currentSpan));
+    verify(tracer, never()).addTag(eq(Span.SPAN_ERROR_TAG_NAME), anyString());
+    verify(currentSpan).logEvent(eq(Span.SERVER_SEND));
+  }
+
+  @Test
+  public void testAfterHandleWithCurrentSpanAndWithException() {
+    final Span currentSpan = mock(Span.class, "currentSpan");
+    when(tracer.isTracing()).thenReturn(true);
+    when(tracer.getCurrentSpan()).thenReturn(currentSpan);
+
+    spanManager.afterHandle(new NullPointerException());
+
+    verify(tracer).detach(eq(currentSpan));
+    verify(tracer).addTag(eq(Span.SPAN_ERROR_TAG_NAME), anyString());
+    verify(currentSpan).logEvent(eq(Span.SERVER_SEND));
+  }
+
+  @Test
+  public void testAfterHandleWithoutCurrentSpan() {
+    when(tracer.isTracing()).thenReturn(false);
+    when(tracer.getCurrentSpan()).thenReturn(null);
+
+    spanManager.afterHandle(null);
+  }
+
+  @Test
+  public void testBeforeSendWithCurrentSpanOnClientSendFromMessage() {
     when(tracer.isTracing()).thenReturn(false);
 
     final Span parentSpan = mock(Span.class, "parentSpan");
@@ -94,7 +133,7 @@ public class DefaultAmqpMessagingSpanManagerTest {
   }
 
   @Test
-  public void testInjectCurrentSpanOnServerReceiveFromMessage() {
+  public void testBeforeSendWithCurrentSpanOnServerReceiveFromMessage() {
     when(tracer.isTracing()).thenReturn(false);
 
     final Span parentSpan = mock(Span.class, "parentSpan");
@@ -116,7 +155,7 @@ public class DefaultAmqpMessagingSpanManagerTest {
   }
 
   @Test
-  public void testInjectCurrentSpanOnServerReceiveFromTracer() {
+  public void testBeforeSendWithCurrentSpanOnServerReceiveFromTracer() {
     final Span currentSpan = mock(Span.class, "currentSpan");
     when(tracer.getCurrentSpan()).thenReturn(currentSpan);
     when(tracer.isTracing()).thenReturn(true);
@@ -134,5 +173,76 @@ public class DefaultAmqpMessagingSpanManagerTest {
     assertEquals(newSpan, span);
 
     verify(newSpan).logEvent(eq(Span.SERVER_RECV));
+  }
+
+  @Test
+  public void testAfterSendOnServerSendWithCurrentSpanAndWithoutException() {
+    final Span currentSpan = mock(Span.class, "currentSpan");
+
+    when(currentSpan.logs()).thenReturn(getListFromOne(Span.SERVER_RECV));
+    when(tracer.getCurrentSpan()).thenReturn(currentSpan);
+
+    spanManager.afterSend(null);
+
+    verify(tracer).close(eq(currentSpan));
+    verify(tracer, never()).addTag(eq(Span.SPAN_ERROR_TAG_NAME), anyString());
+    verify(currentSpan).logEvent(eq(Span.SERVER_SEND));
+  }
+
+  @Test
+  public void testAfterSendOnServerSendWithCurrentSpanAndException() {
+    final Span currentSpan = mock(Span.class, "currentSpan");
+
+    when(currentSpan.logs()).thenReturn(getListFromOne(Span.SERVER_RECV));
+    when(tracer.getCurrentSpan()).thenReturn(currentSpan);
+
+    spanManager.afterSend(new NullPointerException());
+
+    verify(tracer).close(eq(currentSpan));
+    verify(tracer).addTag(eq(Span.SPAN_ERROR_TAG_NAME), anyString());
+    verify(currentSpan).logEvent(eq(Span.SERVER_SEND));
+  }
+
+  @Test
+  public void testAfterSendOnClientReceiveSendWithCurrentSpanAndWithoutException() {
+    final Span currentSpan = mock(Span.class, "currentSpan");
+
+    when(currentSpan.logs()).thenReturn(Collections.emptyList());
+    when(tracer.getCurrentSpan()).thenReturn(currentSpan);
+
+    spanManager.afterSend(null);
+
+    verify(tracer).close(eq(currentSpan));
+    verify(tracer, never()).addTag(eq(Span.SPAN_ERROR_TAG_NAME), anyString());
+    verify(currentSpan).logEvent(eq(Span.CLIENT_RECV));
+  }
+
+  @Test
+  public void testAfterSendOnClientReceiveWithCurrentSpanAndException() {
+    final Span currentSpan = mock(Span.class, "currentSpan");
+
+    when(currentSpan.logs()).thenReturn(Collections.emptyList());
+    when(tracer.getCurrentSpan()).thenReturn(currentSpan);
+
+    spanManager.afterSend(new NullPointerException());
+
+    verify(tracer).close(eq(currentSpan));
+    verify(tracer).addTag(eq(Span.SPAN_ERROR_TAG_NAME), anyString());
+    verify(currentSpan).logEvent(eq(Span.CLIENT_RECV));
+  }
+
+  @Test
+  public void testAfterSendOnServerSendWithoutCurrentSpan() {
+    when(tracer.getCurrentSpan()).thenReturn(null);
+
+    spanManager.afterSend(null);
+
+    verify(tracer).close(eq(null));
+  }
+
+  private List<Log> getListFromOne(String event) {
+    final List<Log> logs = new ArrayList<>();
+    logs.add(new Log(System.currentTimeMillis(), event));
+    return logs;
   }
 }

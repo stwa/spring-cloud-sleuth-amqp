@@ -1,18 +1,22 @@
 package com.netshoes.springframework.cloud.sleuth.instrument.amqp;
 
 import com.netshoes.springframework.cloud.sleuth.instrument.amqp.mock.RabbitListenerMock;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.mockito.Matchers;
-import org.mockito.Mockito;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.verify;
 
 /**
  * Unit tests for {@link RabbitListenerAspect}.
@@ -29,14 +33,30 @@ public class RabbitListenerAspectTest {
 
   @Test
   public void aspectInvokeSuccess() throws Throwable {
-    Assert.assertNotNull(rabbitListenerMock);
-    final Message message = new Message("body".getBytes(), new MessageProperties());
+    assertNotNull(rabbitListenerMock);
+    final Message message = new Message("body1".getBytes(), new MessageProperties());
     rabbitListenerMock.onMessage(message);
 
-    Mockito.verify(amqpMessagingSpanManager)
-        .beforeHandle(Matchers.eq(message), captor.capture());
+    verify(amqpMessagingSpanManager).beforeHandle(eq(message), captor.capture());
+    verify(amqpMessagingSpanManager).afterHandle(eq(null));
 
     final String[] queues = captor.getValue();
-    Assert.assertEquals("test-queue", queues[0]);
+    assertEquals("test-queue", queues[0]);
+  }
+
+  @Test
+  public void aspectInvokeError() throws Throwable {
+    assertNotNull(rabbitListenerMock);
+    rabbitListenerMock.throwExceptionInNextMessage(new NullPointerException());
+
+    final Message message = new Message("body2".getBytes(), new MessageProperties());
+    assertThatThrownBy(() -> rabbitListenerMock.onMessage(message))
+        .isInstanceOf(NullPointerException.class);
+
+    verify(amqpMessagingSpanManager).beforeHandle(eq(message), captor.capture());
+    verify(amqpMessagingSpanManager).afterHandle(any(NullPointerException.class));
+
+    final String[] queues = captor.getValue();
+    assertEquals("test-queue", queues[0]);
   }
 }

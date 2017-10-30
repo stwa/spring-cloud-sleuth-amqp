@@ -12,9 +12,20 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
  */
 public class RabbitListenerMock {
   private final Logger logger = LoggerFactory.getLogger(RabbitListenerMock.class);
+  private boolean throwException = false;
+  private RuntimeException exceptionInOnMessage;
 
   @RabbitListener(queues = "test-queue")
   public void onMessage(Message message) {
+    if (exceptionInOnMessage != null && throwException) {
+      throwException = false;
+      throw exceptionInOnMessage;
+    }
     logger.info("Message {} received.", String.valueOf(message.getBody()));
+  }
+
+  public void throwExceptionInNextMessage(RuntimeException e) {
+    this.exceptionInOnMessage = e;
+    this.throwException = true;
   }
 }
