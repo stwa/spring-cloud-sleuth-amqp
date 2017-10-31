@@ -1,13 +1,12 @@
 package com.netshoes.springframework.cloud.sleuth.instrument.amqp;
 
+import java.lang.reflect.Method;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
-
-import java.lang.reflect.Method;
 
 /**
  * This Aspect intercept methods annotated with {@link RabbitListener} and invoke {@link
