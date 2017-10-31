@@ -1,7 +1,9 @@
 package com.netshoes.springframework.cloud.sleuth.instrument.amqp;
 
-import com.netshoes.springframework.cloud.sleuth.instrument.amqp.mock.RabbitListenerMock;
 import com.netshoes.springframework.cloud.sleuth.instrument.amqp.mock.AmqpTemplateMock;
+import com.netshoes.springframework.cloud.sleuth.instrument.amqp.mock.AmqpTemplateMockManager;
+import com.netshoes.springframework.cloud.sleuth.instrument.amqp.mock.RabbitListenerMock;
+import com.netshoes.springframework.cloud.sleuth.instrument.amqp.mock.RabbitListenerMockManager;
 import org.mockito.Mockito;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.boot.SpringBootConfiguration;
@@ -18,13 +20,13 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 public class SpringTestConfiguration {
 
   @Bean
-  public RabbitListenerMock rabbitListener() {
-    return new RabbitListenerMock();
+  public RabbitListenerMock rabbitListener(RabbitListenerMockManager mockManager) {
+    return new RabbitListenerMock(mockManager);
   }
 
   @Bean
-  public AmqpTemplate rabbitTemplate() {
-    return new AmqpTemplateMock();
+  public AmqpTemplate rabbitTemplate(AmqpTemplateMockManager mockManager) {
+    return new AmqpTemplateMock(mockManager);
   }
 
   @Bean
@@ -40,5 +42,15 @@ public class SpringTestConfiguration {
   @Bean
   public AmqpMessagingSpanManager spanManager() {
     return Mockito.mock(AmqpMessagingSpanManager.class);
+  }
+
+  @Bean
+  public AmqpTemplateMockManager amqpTemplateMockManager() {
+    return new AmqpTemplateMockManager();
+  }
+
+  @Bean
+  public RabbitListenerMockManager rabbitListenerMockManager() {
+    return new RabbitListenerMockManager();
   }
 }

@@ -1,6 +1,14 @@
 package com.netshoes.springframework.cloud.sleuth.instrument.amqp;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.verify;
+
 import com.netshoes.springframework.cloud.sleuth.instrument.amqp.mock.RabbitListenerMock;
+import com.netshoes.springframework.cloud.sleuth.instrument.amqp.mock.RabbitListenerMockManager;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -9,14 +17,9 @@ import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.junit4.SpringRunner;
-
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.verify;
 
 /**
  * Unit tests for {@link RabbitListenerAspect}.
@@ -25,9 +28,11 @@ import static org.mockito.Mockito.verify;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
+@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 public class RabbitListenerAspectTest {
 
   @Autowired private RabbitListenerMock rabbitListenerMock;
+  @Autowired private RabbitListenerMockManager mockManager;
   @Autowired private AmqpMessagingSpanManager amqpMessagingSpanManager;
   @Captor private ArgumentCaptor<String[]> captor;
 
@@ -47,7 +52,7 @@ public class RabbitListenerAspectTest {
   @Test
   public void aspectInvokeError() throws Throwable {
     assertNotNull(rabbitListenerMock);
-    rabbitListenerMock.throwExceptionInNextMessage(new NullPointerException());
+    mockManager.throwExceptionInNextMessage(new NullPointerException());
 
     final Message message = new Message("body2".getBytes(), new MessageProperties());
     assertThatThrownBy(() -> rabbitListenerMock.onMessage(message))
