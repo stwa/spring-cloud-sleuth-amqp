@@ -8,7 +8,7 @@ The project spring-cloud-sleuth does not provided a instrumentation for spring-r
 # Compatibility
 | spring-cloud-sleuth-amqp          | spring-cloud-sleuth | spring-rabbit |
 | --------------------------------- | ------------------- | ------------- |
-| 0.8                               | 1.2.1.RELEASE       | 1.7.3.RELEASE |
+| 0.8.1                             | 1.2.1.RELEASE       | 1.7.3.RELEASE |
 
 # Usage
 Add the following dependency to project:
