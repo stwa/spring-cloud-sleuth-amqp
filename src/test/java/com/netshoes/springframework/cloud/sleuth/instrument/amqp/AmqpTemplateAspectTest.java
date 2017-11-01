@@ -179,4 +179,79 @@ public class AmqpTemplateAspectTest {
     verify(amqpMessagingSpanManager).beforeSend(eq(message), eq("exchange"));
     verify(amqpMessagingSpanManager).afterSend(any(NullPointerException.class));
   }
+
+  @Test
+  public void aspectInvokeConvertAndSendSuccess() throws Throwable {
+    Assert.assertNotNull(amqpTemplate);
+
+    final Message message =
+        new Message("body-convert-and-send".getBytes(), new MessageProperties());
+    amqpTemplate.convertAndSend(message);
+
+    verify(amqpMessagingSpanManager).beforeSend(eq(message), eq(""));
+    verify(amqpMessagingSpanManager).afterSend(eq(null));
+  }
+
+  @Test
+  public void aspectInvokeConvertAndSendError() throws Throwable {
+    Assert.assertNotNull(amqpTemplate);
+    mockManager.throwExceptionInNextMethodCall(new NullPointerException());
+
+    final Message message =
+        new Message("body-convert-and-send".getBytes(), new MessageProperties());
+    assertThatThrownBy(() -> amqpTemplate.convertAndSend(message));
+
+    verify(amqpMessagingSpanManager).beforeSend(eq(message), eq(""));
+    verify(amqpMessagingSpanManager).afterSend(any(NullPointerException.class));
+  }
+
+  @Test
+  public void aspectInvokeConvertAndSendWithRoutingKeySuccess() throws Throwable {
+    Assert.assertNotNull(amqpTemplate);
+
+    final Message message =
+        new Message("body-convert-and-send-rk".getBytes(), new MessageProperties());
+    amqpTemplate.convertAndSend("rk", message);
+
+    verify(amqpMessagingSpanManager).beforeSend(eq(message), eq(""));
+    verify(amqpMessagingSpanManager).afterSend(eq(null));
+  }
+
+  @Test
+  public void aspectInvokeConvertAndSendWithRoutingKeyError() throws Throwable {
+    Assert.assertNotNull(amqpTemplate);
+    mockManager.throwExceptionInNextMethodCall(new NullPointerException());
+
+    final Message message =
+        new Message("body-send-and-receive-rk".getBytes(), new MessageProperties());
+    assertThatThrownBy(() -> amqpTemplate.convertAndSend("rk", message));
+
+    verify(amqpMessagingSpanManager).beforeSend(eq(message), eq(""));
+    verify(amqpMessagingSpanManager).afterSend(any(NullPointerException.class));
+  }
+
+  @Test
+  public void aspectInvokeConvertAndSendWithRoutingKeyAndExchangeSuccess() throws Throwable {
+    Assert.assertNotNull(amqpTemplate);
+
+    final Message message =
+        new Message("body-send-and-receive-exchange-rk".getBytes(), new MessageProperties());
+    amqpTemplate.convertAndSend("exchange", "rk", message);
+
+    verify(amqpMessagingSpanManager).beforeSend(eq(message), eq("exchange"));
+    verify(amqpMessagingSpanManager).afterSend(eq(null));
+  }
+
+  @Test
+  public void aspectInvokeConvertAndSendWithRoutingKeyAndExchangeError() throws Throwable {
+    Assert.assertNotNull(amqpTemplate);
+    mockManager.throwExceptionInNextMethodCall(new NullPointerException());
+
+    final Message message =
+        new Message("body-send-and-receive-exchange-rk".getBytes(), new MessageProperties());
+    assertThatThrownBy(() -> amqpTemplate.convertAndSend("exchange", "rk", message));
+
+    verify(amqpMessagingSpanManager).beforeSend(eq(message), eq("exchange"));
+    verify(amqpMessagingSpanManager).afterSend(any(NullPointerException.class));
+  }
 }

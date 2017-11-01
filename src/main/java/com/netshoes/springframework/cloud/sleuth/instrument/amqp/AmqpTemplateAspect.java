@@ -37,6 +37,11 @@ public class AmqpTemplateAspect {
     execute(call);
   }
 
+  @Around("execution(* org.springframework.amqp.core.AmqpTemplate.convertAndSend(..))")
+  public void executeAroundConvertAndSend(ProceedingJoinPoint call) throws Throwable {
+    execute(call);
+  }
+
   private void execute(ProceedingJoinPoint call) throws Throwable {
     final Object[] args = call.getArgs();
     final Message message = getMessageFromArguments(args);
