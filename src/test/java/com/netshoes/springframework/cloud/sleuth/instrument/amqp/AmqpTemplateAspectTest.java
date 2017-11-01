@@ -184,11 +184,9 @@ public class AmqpTemplateAspectTest {
   public void aspectInvokeConvertAndSendSuccess() throws Throwable {
     Assert.assertNotNull(amqpTemplate);
 
-    final Message message =
-        new Message("body-convert-and-send".getBytes(), new MessageProperties());
-    amqpTemplate.convertAndSend(message);
+    amqpTemplate.convertAndSend("body-convert-and-send");
 
-    verify(amqpMessagingSpanManager).beforeSend(eq(message), eq(""));
+    verify(amqpMessagingSpanManager).beforeSend(any(Message.class), eq("unknown"));
     verify(amqpMessagingSpanManager).afterSend(eq(null));
   }
 
@@ -197,11 +195,9 @@ public class AmqpTemplateAspectTest {
     Assert.assertNotNull(amqpTemplate);
     mockManager.throwExceptionInNextMethodCall(new NullPointerException());
 
-    final Message message =
-        new Message("body-convert-and-send".getBytes(), new MessageProperties());
-    assertThatThrownBy(() -> amqpTemplate.convertAndSend(message));
+    assertThatThrownBy(() -> amqpTemplate.convertAndSend("body-convert-and-send"));
 
-    verify(amqpMessagingSpanManager).beforeSend(eq(message), eq(""));
+    verify(amqpMessagingSpanManager).beforeSend(any(Message.class), eq("unknown"));
     verify(amqpMessagingSpanManager).afterSend(any(NullPointerException.class));
   }
 
@@ -209,11 +205,9 @@ public class AmqpTemplateAspectTest {
   public void aspectInvokeConvertAndSendWithRoutingKeySuccess() throws Throwable {
     Assert.assertNotNull(amqpTemplate);
 
-    final Message message =
-        new Message("body-convert-and-send-rk".getBytes(), new MessageProperties());
-    amqpTemplate.convertAndSend("rk", message);
+    amqpTemplate.convertAndSend("rk", "body-convert-and-send-rk");
 
-    verify(amqpMessagingSpanManager).beforeSend(eq(message), eq(""));
+    verify(amqpMessagingSpanManager).beforeSend(any(Message.class), eq("unknown"));
     verify(amqpMessagingSpanManager).afterSend(eq(null));
   }
 
@@ -222,11 +216,9 @@ public class AmqpTemplateAspectTest {
     Assert.assertNotNull(amqpTemplate);
     mockManager.throwExceptionInNextMethodCall(new NullPointerException());
 
-    final Message message =
-        new Message("body-send-and-receive-rk".getBytes(), new MessageProperties());
-    assertThatThrownBy(() -> amqpTemplate.convertAndSend("rk", message));
+    assertThatThrownBy(() -> amqpTemplate.convertAndSend("rk", "body-send-and-receive-rk"));
 
-    verify(amqpMessagingSpanManager).beforeSend(eq(message), eq(""));
+    verify(amqpMessagingSpanManager).beforeSend(any(Message.class), eq("unknown"));
     verify(amqpMessagingSpanManager).afterSend(any(NullPointerException.class));
   }
 
@@ -234,11 +226,9 @@ public class AmqpTemplateAspectTest {
   public void aspectInvokeConvertAndSendWithRoutingKeyAndExchangeSuccess() throws Throwable {
     Assert.assertNotNull(amqpTemplate);
 
-    final Message message =
-        new Message("body-send-and-receive-exchange-rk".getBytes(), new MessageProperties());
-    amqpTemplate.convertAndSend("exchange", "rk", message);
+    amqpTemplate.convertAndSend("exchange", "rk", "body-send-and-receive-exchange-rk");
 
-    verify(amqpMessagingSpanManager).beforeSend(eq(message), eq("exchange"));
+    verify(amqpMessagingSpanManager).beforeSend(any(Message.class), eq("unknown"));
     verify(amqpMessagingSpanManager).afterSend(eq(null));
   }
 
@@ -247,11 +237,10 @@ public class AmqpTemplateAspectTest {
     Assert.assertNotNull(amqpTemplate);
     mockManager.throwExceptionInNextMethodCall(new NullPointerException());
 
-    final Message message =
-        new Message("body-send-and-receive-exchange-rk".getBytes(), new MessageProperties());
-    assertThatThrownBy(() -> amqpTemplate.convertAndSend("exchange", "rk", message));
+    assertThatThrownBy(
+        () -> amqpTemplate.convertAndSend("exchange", "rk", "body-send-and-receive-exchange-rk"));
 
-    verify(amqpMessagingSpanManager).beforeSend(eq(message), eq("exchange"));
+    verify(amqpMessagingSpanManager).beforeSend(any(Message.class), eq("unknown"));
     verify(amqpMessagingSpanManager).afterSend(any(NullPointerException.class));
   }
 }

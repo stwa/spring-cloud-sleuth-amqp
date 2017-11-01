@@ -3,49 +3,92 @@ package com.netshoes.springframework.cloud.sleuth.instrument.amqp;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.amqp.core.Message;
+import org.springframework.amqp.core.MessagePostProcessor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
 /**
  * Aspect responsible for get the current {@link Message} before execution of {@link
  * org.springframework.amqp.core.AmqpTemplate} methods and invoke {@link
- * AmqpMessagingSpanManager#beforeSend(Message, String)}.
+ * AmqpMessagingSpanManager#beforeSend(Message, String)} and {@link
+ * AmqpMessagingSpanManager#afterSend(Exception)}.
  *
- * @see AmqpMessagingSpanInjector
+ * @see AmqpMessagingSpanManager
+ * @see SpanManagerMessagePostProcessor
  * @author André Ignacio
  */
 @Aspect
 public class AmqpTemplateAspect {
   private final AmqpMessagingSpanManager spanManager;
+  private final SpanManagerMessagePostProcessor beforePublishPostProcessor;
 
   /**
    * Creates a new instance.
    *
    * @param spanManager Span manager for AMQP messaging
+   * @param amqpMessagingBeforePublishPostProcessor Message post processor
    */
-  public AmqpTemplateAspect(AmqpMessagingSpanManager spanManager) {
+  public AmqpTemplateAspect(
+      AmqpMessagingSpanManager spanManager,
+      SpanManagerMessagePostProcessor amqpMessagingBeforePublishPostProcessor) {
     this.spanManager = spanManager;
+    this.beforePublishPostProcessor = amqpMessagingBeforePublishPostProcessor;
   }
 
   @Around("execution(* org.springframework.amqp.core.AmqpTemplate.send(..))")
   public void executeAroundSend(ProceedingJoinPoint call) throws Throwable {
-    execute(call);
+    executeWithoutPostProcessor(call);
   }
 
   @Around("execution(* org.springframework.amqp.core.AmqpTemplate.sendAndReceive(..))")
   public void executeAroundSendAndReceive(ProceedingJoinPoint call) throws Throwable {
-    execute(call);
+    executeWithoutPostProcessor(call);
   }
 
-  @Around("execution(* org.springframework.amqp.core.AmqpTemplate.convertAndSend(..))")
-  public void executeAroundConvertAndSend(ProceedingJoinPoint call) throws Throwable {
-    execute(call);
+  @Around("execution(* org.springframework.amqp.core.AmqpTemplate.convertAndSend(Object))")
+  public void executeAroundConvertAndSendOneArg(ProceedingJoinPoint call) throws Throwable {
+    executeConvertAndSendWithoutPostProcessor(call);
   }
 
-  private void execute(ProceedingJoinPoint call) throws Throwable {
+  @Around("execution(* org.springframework.amqp.core.AmqpTemplate.convertAndSend(String,Object))")
+  public void executeAroundConvertAndSendTwoArgs(ProceedingJoinPoint call) throws Throwable {
+    executeConvertAndSendWithoutPostProcessor(call);
+  }
+
+  @Around(
+      "execution(* org.springframework.amqp.core.AmqpTemplate.convertAndSend(String,String,Object))")
+  public void executeAroundConvertAndSendThreeArgs(ProceedingJoinPoint call) throws Throwable {
+    executeConvertAndSendWithoutPostProcessor(call);
+  }
+
+  private void executeConvertAndSendWithoutPostProcessor(ProceedingJoinPoint call)
+      throws Throwable {
+    final AmqpTemplate amqpTemplate = (AmqpTemplate) call.getThis();
+
+    final Object[] args = call.getArgs();
+    final MessagePostProcessor messagePostProcessor = getMessagePostProcessor(args);
+    if (messagePostProcessor == null) {
+      boolean executed;
+      try {
+        executed = changeExecutionOfMethodToUsePostProcessor(amqpTemplate, args);
+      } catch (Exception e) {
+        spanManager.afterSend(e);
+        throw e;
+      }
+      if (executed) {
+        spanManager.afterSend(null);
+      } else {
+        executeWithoutPostProcessor(call);
+      }
+    } else {
+      // TODO Chain the post processors
+    }
+  }
+
+  private void executeWithoutPostProcessor(ProceedingJoinPoint call) throws Throwable {
     final Object[] args = call.getArgs();
     final Message message = getMessageFromArguments(args);
-
     String exchange = getExchangeFromArguments(args);
     if (exchange == null) {
       exchange = getExchangeFromRabbitTemplate(call.getTarget());
@@ -58,6 +101,28 @@ public class AmqpTemplateAspect {
       throw e;
     }
     spanManager.afterSend(null);
+  }
+
+  private boolean changeExecutionOfMethodToUsePostProcessor(
+      AmqpTemplate amqpTemplate, Object[] args) {
+    boolean executed = true;
+    final int argsLength = args.length;
+    switch (argsLength) {
+      case 1:
+        amqpTemplate.convertAndSend(args[0], beforePublishPostProcessor);
+        break;
+      case 2:
+        amqpTemplate.convertAndSend((String) args[0], args[1], beforePublishPostProcessor);
+        break;
+      case 3:
+        amqpTemplate.convertAndSend(
+            (String) args[0], (String) args[1], args[2], beforePublishPostProcessor);
+        break;
+      default:
+        executed = false;
+        break;
+    }
+    return executed;
   }
 
   private void before(Message message, String exchange) {
@@ -87,6 +152,15 @@ public class AmqpTemplateAspect {
     for (Object arg : args) {
       if (arg instanceof Message) {
         return (Message) arg;
+      }
+    }
+    return null;
+  }
+
+  private MessagePostProcessor getMessagePostProcessor(Object[] args) {
+    for (Object arg : args) {
+      if (arg instanceof MessagePostProcessor) {
+        return (MessagePostProcessor) arg;
       }
     }
     return null;

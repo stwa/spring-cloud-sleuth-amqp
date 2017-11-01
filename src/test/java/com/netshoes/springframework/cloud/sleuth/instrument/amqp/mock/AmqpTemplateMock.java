@@ -6,9 +6,11 @@ import org.springframework.amqp.AmqpException;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessagePostProcessor;
+import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.core.ReceiveAndReplyCallback;
 import org.springframework.amqp.core.ReplyToAddressCallback;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.support.converter.MessageConverter;
 
 /**
  * Mocked implementation for a {@link RabbitTemplate}.
@@ -18,9 +20,11 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 public class AmqpTemplateMock implements AmqpTemplate {
   private final Logger logger = LoggerFactory.getLogger(AmqpTemplateMock.class);
   private final AmqpTemplateMockManager mockManager;
+  private final MessageConverter messageConverter;
 
-  public AmqpTemplateMock(AmqpTemplateMockManager mockManager) {
+  public AmqpTemplateMock(AmqpTemplateMockManager mockManager, MessageConverter messageConverter) {
     this.mockManager = mockManager;
+    this.messageConverter = messageConverter;
   }
 
   @Override
@@ -63,6 +67,7 @@ public class AmqpTemplateMock implements AmqpTemplate {
   @Override
   public void convertAndSend(Object message, MessagePostProcessor messagePostProcessor)
       throws AmqpException {
+    messagePostProcessor.postProcessMessage(convertMessageIfNecessary(message));
     mockManager.throwExceptionIfConfigured();
     logger.debug("convertAndSend: {} {}", message, messagePostProcessor);
   }
@@ -71,6 +76,7 @@ public class AmqpTemplateMock implements AmqpTemplate {
   public void convertAndSend(
       String routingKey, Object message, MessagePostProcessor messagePostProcessor)
       throws AmqpException {
+    messagePostProcessor.postProcessMessage(convertMessageIfNecessary(message));
     mockManager.throwExceptionIfConfigured();
     logger.debug("convertAndSend: {} {} {}", routingKey, message, messagePostProcessor);
   }
@@ -79,6 +85,7 @@ public class AmqpTemplateMock implements AmqpTemplate {
   public void convertAndSend(
       String exchange, String routingKey, Object message, MessagePostProcessor messagePostProcessor)
       throws AmqpException {
+    messagePostProcessor.postProcessMessage(convertMessageIfNecessary(message));
     mockManager.throwExceptionIfConfigured();
     logger.debug(
         "convertAndSend: {} {} {} {}", exchange, routingKey, message, messagePostProcessor);
@@ -266,5 +273,12 @@ public class AmqpTemplateMock implements AmqpTemplate {
     logger.debug(
         "convertSendAndReceive: {} {}", exchange, routingKey, message, messagePostProcessor);
     return null;
+  }
+
+  protected Message convertMessageIfNecessary(final Object object) {
+    if (object instanceof Message) {
+      return (Message) object;
+    }
+    return messageConverter.toMessage(object, new MessageProperties());
   }
 }
