@@ -9,8 +9,10 @@ import com.netshoes.springframework.cloud.sleuth.instrument.amqp.mock.AmqpTempla
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.amqp.core.Message;
+import org.springframework.amqp.core.MessagePostProcessor;
 import org.springframework.amqp.core.MessageProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -30,6 +32,7 @@ public class AmqpTemplateAspectTest {
   @Autowired private AmqpTemplate amqpTemplate;
   @Autowired private AmqpMessagingSpanManager amqpMessagingSpanManager;
   @Autowired private AmqpTemplateMockManager mockManager;
+  @Mock private MessagePostProcessor messagePostProcessor;
 
   @Test
   public void aspectInvokeSendSuccess() throws Throwable {
@@ -240,6 +243,86 @@ public class AmqpTemplateAspectTest {
     assertThatThrownBy(
         () -> amqpTemplate.convertAndSend("exchange", "rk", "body-send-and-receive-exchange-rk"));
 
+    verify(amqpMessagingSpanManager).beforeSend(any(Message.class), eq("unknown"));
+    verify(amqpMessagingSpanManager).afterSend(any(NullPointerException.class));
+  }
+
+  @Test
+  public void aspectInvokeConvertAndSendWithPostProcessorSuccess() throws Throwable {
+    Assert.assertNotNull(amqpTemplate);
+
+
+    amqpTemplate.convertAndSend((Object) "body-convert-and-send", messagePostProcessor);
+
+    verify(messagePostProcessor).postProcessMessage(any(Message.class));
+    verify(amqpMessagingSpanManager).beforeSend(any(Message.class), eq("unknown"));
+    verify(amqpMessagingSpanManager).afterSend(eq(null));
+  }
+
+  @Test
+  public void aspectInvokeConvertAndSendWithPostProcessorError() throws Throwable {
+    Assert.assertNotNull(amqpTemplate);
+    mockManager.throwExceptionInNextMethodCall(new NullPointerException());
+
+    assertThatThrownBy(
+        () -> amqpTemplate.convertAndSend((Object) "body-convert-and-send", messagePostProcessor));
+
+    verify(messagePostProcessor).postProcessMessage(any(Message.class));
+    verify(amqpMessagingSpanManager).beforeSend(any(Message.class), eq("unknown"));
+    verify(amqpMessagingSpanManager).afterSend(any(NullPointerException.class));
+  }
+
+  @Test
+  public void aspectInvokeConvertAndSendWithRoutingKeyAndPostProcessorSuccess() throws Throwable {
+    Assert.assertNotNull(amqpTemplate);
+
+    amqpTemplate.convertAndSend("rk", (Object) "body-convert-and-send-rk", messagePostProcessor);
+
+    verify(messagePostProcessor).postProcessMessage(any(Message.class));
+    verify(amqpMessagingSpanManager).beforeSend(any(Message.class), eq("unknown"));
+    verify(amqpMessagingSpanManager).afterSend(eq(null));
+  }
+
+  @Test
+  public void aspectInvokeConvertAndSendWithRoutingKeyAndPostProcessorError() throws Throwable {
+    Assert.assertNotNull(amqpTemplate);
+    mockManager.throwExceptionInNextMethodCall(new NullPointerException());
+
+    assertThatThrownBy(
+        () ->
+            amqpTemplate.convertAndSend(
+                "rk", (Object) "body-send-and-receive-rk", messagePostProcessor));
+
+    verify(messagePostProcessor).postProcessMessage(any(Message.class));
+    verify(amqpMessagingSpanManager).beforeSend(any(Message.class), eq("unknown"));
+    verify(amqpMessagingSpanManager).afterSend(any(NullPointerException.class));
+  }
+
+  @Test
+  public void aspectInvokeConvertAndSendWithRoutingKeyAndExchangeAndPostProcessorSuccess()
+      throws Throwable {
+    Assert.assertNotNull(amqpTemplate);
+
+    amqpTemplate.convertAndSend(
+        "exchange", "rk", "body-send-and-receive-exchange-rk", messagePostProcessor);
+
+    verify(messagePostProcessor).postProcessMessage(any(Message.class));
+    verify(amqpMessagingSpanManager).beforeSend(any(Message.class), eq("unknown"));
+    verify(amqpMessagingSpanManager).afterSend(eq(null));
+  }
+
+  @Test
+  public void aspectInvokeConvertAndSendWithRoutingKeyAndExchangeAndPostProcessorError()
+      throws Throwable {
+    Assert.assertNotNull(amqpTemplate);
+    mockManager.throwExceptionInNextMethodCall(new NullPointerException());
+
+    assertThatThrownBy(
+        () ->
+            amqpTemplate.convertAndSend(
+                "exchange", "rk", "body-send-and-receive-exchange-rk", messagePostProcessor));
+
+    verify(messagePostProcessor).postProcessMessage(any(Message.class));
     verify(amqpMessagingSpanManager).beforeSend(any(Message.class), eq("unknown"));
     verify(amqpMessagingSpanManager).afterSend(any(NullPointerException.class));
   }
