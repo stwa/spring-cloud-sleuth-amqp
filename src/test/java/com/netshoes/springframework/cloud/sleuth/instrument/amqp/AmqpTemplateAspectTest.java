@@ -41,7 +41,7 @@ public class AmqpTemplateAspectTest {
     final Message message = new Message("body-send".getBytes(), new MessageProperties());
     amqpTemplate.send(message);
 
-    verify(amqpMessagingSpanManager).beforeSend(eq(message), eq(""));
+    verify(amqpMessagingSpanManager).beforeSend(eq(message), eq("amqp:my-default-exchange/*"));
     verify(amqpMessagingSpanManager).afterSend(eq(null));
   }
 
@@ -54,7 +54,7 @@ public class AmqpTemplateAspectTest {
 
     assertThatThrownBy(() -> amqpTemplate.send(message)).isInstanceOf(NullPointerException.class);
 
-    verify(amqpMessagingSpanManager).beforeSend(eq(message), eq(""));
+    verify(amqpMessagingSpanManager).beforeSend(eq(message), eq("amqp:my-default-exchange/*"));
     verify(amqpMessagingSpanManager).afterSend(any(NullPointerException.class));
   }
 
@@ -65,7 +65,7 @@ public class AmqpTemplateAspectTest {
     final Message message = new Message("body-send-rk".getBytes(), new MessageProperties());
     amqpTemplate.send("rk", message);
 
-    verify(amqpMessagingSpanManager).beforeSend(eq(message), eq(""));
+    verify(amqpMessagingSpanManager).beforeSend(eq(message), eq("amqp:my-default-exchange/rk"));
     verify(amqpMessagingSpanManager).afterSend(eq(null));
   }
 
@@ -79,7 +79,7 @@ public class AmqpTemplateAspectTest {
     assertThatThrownBy(() -> amqpTemplate.send("rk", message))
         .isInstanceOf(NullPointerException.class);
 
-    verify(amqpMessagingSpanManager).beforeSend(eq(message), eq(""));
+    verify(amqpMessagingSpanManager).beforeSend(eq(message), eq("amqp:my-default-exchange/rk"));
     verify(amqpMessagingSpanManager).afterSend(any(NullPointerException.class));
   }
 
@@ -91,7 +91,7 @@ public class AmqpTemplateAspectTest {
         new Message("body-send-exchange-rk".getBytes(), new MessageProperties());
     amqpTemplate.send("exchange", "rk", message);
 
-    verify(amqpMessagingSpanManager).beforeSend(eq(message), eq("exchange"));
+    verify(amqpMessagingSpanManager).beforeSend(eq(message), eq("amqp:exchange/rk"));
     verify(amqpMessagingSpanManager).afterSend(eq(null));
   }
 
@@ -104,7 +104,7 @@ public class AmqpTemplateAspectTest {
         new Message("body-send-exchange-rk".getBytes(), new MessageProperties());
     assertThatThrownBy(() -> amqpTemplate.send("exchange", "rk", message));
 
-    verify(amqpMessagingSpanManager).beforeSend(eq(message), eq("exchange"));
+    verify(amqpMessagingSpanManager).beforeSend(eq(message), eq("amqp:exchange/rk"));
     verify(amqpMessagingSpanManager).afterSend(any(NullPointerException.class));
   }
 
@@ -116,7 +116,7 @@ public class AmqpTemplateAspectTest {
         new Message("body-send-and-receive".getBytes(), new MessageProperties());
     amqpTemplate.sendAndReceive(message);
 
-    verify(amqpMessagingSpanManager).beforeSend(eq(message), eq(""));
+    verify(amqpMessagingSpanManager).beforeSend(eq(message), eq("amqp:my-default-exchange/*"));
     verify(amqpMessagingSpanManager).afterSend(eq(null));
   }
 
@@ -129,7 +129,7 @@ public class AmqpTemplateAspectTest {
         new Message("body-send-and-receive".getBytes(), new MessageProperties());
     assertThatThrownBy(() -> amqpTemplate.sendAndReceive(message));
 
-    verify(amqpMessagingSpanManager).beforeSend(eq(message), eq(""));
+    verify(amqpMessagingSpanManager).beforeSend(eq(message), eq("amqp:my-default-exchange/*"));
     verify(amqpMessagingSpanManager).afterSend(any(NullPointerException.class));
   }
 
@@ -141,7 +141,7 @@ public class AmqpTemplateAspectTest {
         new Message("body-send-and-receive-rk".getBytes(), new MessageProperties());
     amqpTemplate.sendAndReceive("rk", message);
 
-    verify(amqpMessagingSpanManager).beforeSend(eq(message), eq(""));
+    verify(amqpMessagingSpanManager).beforeSend(eq(message), eq("amqp:my-default-exchange/rk"));
     verify(amqpMessagingSpanManager).afterSend(eq(null));
   }
 
@@ -154,7 +154,7 @@ public class AmqpTemplateAspectTest {
         new Message("body-send-and-receive-rk".getBytes(), new MessageProperties());
     assertThatThrownBy(() -> amqpTemplate.sendAndReceive("rk", message));
 
-    verify(amqpMessagingSpanManager).beforeSend(eq(message), eq(""));
+    verify(amqpMessagingSpanManager).beforeSend(eq(message), eq("amqp:my-default-exchange/rk"));
     verify(amqpMessagingSpanManager).afterSend(any(NullPointerException.class));
   }
 
@@ -166,7 +166,7 @@ public class AmqpTemplateAspectTest {
         new Message("body-send-and-receive-exchange-rk".getBytes(), new MessageProperties());
     amqpTemplate.sendAndReceive("exchange", "rk", message);
 
-    verify(amqpMessagingSpanManager).beforeSend(eq(message), eq("exchange"));
+    verify(amqpMessagingSpanManager).beforeSend(eq(message), eq("amqp:exchange/rk"));
     verify(amqpMessagingSpanManager).afterSend(eq(null));
   }
 
@@ -179,7 +179,7 @@ public class AmqpTemplateAspectTest {
         new Message("body-send-and-receive-exchange-rk".getBytes(), new MessageProperties());
     assertThatThrownBy(() -> amqpTemplate.sendAndReceive("exchange", "rk", message));
 
-    verify(amqpMessagingSpanManager).beforeSend(eq(message), eq("exchange"));
+    verify(amqpMessagingSpanManager).beforeSend(eq(message), eq("amqp:exchange/rk"));
     verify(amqpMessagingSpanManager).afterSend(any(NullPointerException.class));
   }
 
@@ -189,7 +189,8 @@ public class AmqpTemplateAspectTest {
 
     amqpTemplate.convertAndSend("body-convert-and-send");
 
-    verify(amqpMessagingSpanManager).beforeSend(any(Message.class), eq("unknown"));
+    verify(amqpMessagingSpanManager)
+        .beforeSend(any(Message.class), eq("amqp:my-default-exchange/*"));
     verify(amqpMessagingSpanManager).afterSend(eq(null));
   }
 
@@ -200,7 +201,8 @@ public class AmqpTemplateAspectTest {
 
     assertThatThrownBy(() -> amqpTemplate.convertAndSend("body-convert-and-send"));
 
-    verify(amqpMessagingSpanManager).beforeSend(any(Message.class), eq("unknown"));
+    verify(amqpMessagingSpanManager)
+        .beforeSend(any(Message.class), eq("amqp:my-default-exchange/*"));
     verify(amqpMessagingSpanManager).afterSend(any(NullPointerException.class));
   }
 
@@ -210,7 +212,8 @@ public class AmqpTemplateAspectTest {
 
     amqpTemplate.convertAndSend("rk", "body-convert-and-send-rk");
 
-    verify(amqpMessagingSpanManager).beforeSend(any(Message.class), eq("unknown"));
+    verify(amqpMessagingSpanManager)
+        .beforeSend(any(Message.class), eq("amqp:my-default-exchange/rk"));
     verify(amqpMessagingSpanManager).afterSend(eq(null));
   }
 
@@ -221,7 +224,8 @@ public class AmqpTemplateAspectTest {
 
     assertThatThrownBy(() -> amqpTemplate.convertAndSend("rk", "body-send-and-receive-rk"));
 
-    verify(amqpMessagingSpanManager).beforeSend(any(Message.class), eq("unknown"));
+    verify(amqpMessagingSpanManager)
+        .beforeSend(any(Message.class), eq("amqp:my-default-exchange/rk"));
     verify(amqpMessagingSpanManager).afterSend(any(NullPointerException.class));
   }
 
@@ -231,7 +235,7 @@ public class AmqpTemplateAspectTest {
 
     amqpTemplate.convertAndSend("exchange", "rk", "body-send-and-receive-exchange-rk");
 
-    verify(amqpMessagingSpanManager).beforeSend(any(Message.class), eq("unknown"));
+    verify(amqpMessagingSpanManager).beforeSend(any(Message.class), eq("amqp:exchange/rk"));
     verify(amqpMessagingSpanManager).afterSend(eq(null));
   }
 
@@ -243,7 +247,7 @@ public class AmqpTemplateAspectTest {
     assertThatThrownBy(
         () -> amqpTemplate.convertAndSend("exchange", "rk", "body-send-and-receive-exchange-rk"));
 
-    verify(amqpMessagingSpanManager).beforeSend(any(Message.class), eq("unknown"));
+    verify(amqpMessagingSpanManager).beforeSend(any(Message.class), eq("amqp:exchange/rk"));
     verify(amqpMessagingSpanManager).afterSend(any(NullPointerException.class));
   }
 
@@ -251,11 +255,11 @@ public class AmqpTemplateAspectTest {
   public void aspectInvokeConvertAndSendWithPostProcessorSuccess() throws Throwable {
     Assert.assertNotNull(amqpTemplate);
 
-
     amqpTemplate.convertAndSend((Object) "body-convert-and-send", messagePostProcessor);
 
     verify(messagePostProcessor).postProcessMessage(any(Message.class));
-    verify(amqpMessagingSpanManager).beforeSend(any(Message.class), eq("unknown"));
+    verify(amqpMessagingSpanManager)
+        .beforeSend(any(Message.class), eq("amqp:my-default-exchange/*"));
     verify(amqpMessagingSpanManager).afterSend(eq(null));
   }
 
@@ -268,7 +272,8 @@ public class AmqpTemplateAspectTest {
         () -> amqpTemplate.convertAndSend((Object) "body-convert-and-send", messagePostProcessor));
 
     verify(messagePostProcessor).postProcessMessage(any(Message.class));
-    verify(amqpMessagingSpanManager).beforeSend(any(Message.class), eq("unknown"));
+    verify(amqpMessagingSpanManager)
+        .beforeSend(any(Message.class), eq("amqp:my-default-exchange/*"));
     verify(amqpMessagingSpanManager).afterSend(any(NullPointerException.class));
   }
 
@@ -279,7 +284,8 @@ public class AmqpTemplateAspectTest {
     amqpTemplate.convertAndSend("rk", (Object) "body-convert-and-send-rk", messagePostProcessor);
 
     verify(messagePostProcessor).postProcessMessage(any(Message.class));
-    verify(amqpMessagingSpanManager).beforeSend(any(Message.class), eq("unknown"));
+    verify(amqpMessagingSpanManager)
+        .beforeSend(any(Message.class), eq("amqp:my-default-exchange/rk"));
     verify(amqpMessagingSpanManager).afterSend(eq(null));
   }
 
@@ -294,7 +300,8 @@ public class AmqpTemplateAspectTest {
                 "rk", (Object) "body-send-and-receive-rk", messagePostProcessor));
 
     verify(messagePostProcessor).postProcessMessage(any(Message.class));
-    verify(amqpMessagingSpanManager).beforeSend(any(Message.class), eq("unknown"));
+    verify(amqpMessagingSpanManager)
+        .beforeSend(any(Message.class), eq("amqp:my-default-exchange/rk"));
     verify(amqpMessagingSpanManager).afterSend(any(NullPointerException.class));
   }
 
@@ -307,7 +314,7 @@ public class AmqpTemplateAspectTest {
         "exchange", "rk", "body-send-and-receive-exchange-rk", messagePostProcessor);
 
     verify(messagePostProcessor).postProcessMessage(any(Message.class));
-    verify(amqpMessagingSpanManager).beforeSend(any(Message.class), eq("unknown"));
+    verify(amqpMessagingSpanManager).beforeSend(any(Message.class), eq("amqp:exchange/rk"));
     verify(amqpMessagingSpanManager).afterSend(eq(null));
   }
 
@@ -323,7 +330,7 @@ public class AmqpTemplateAspectTest {
                 "exchange", "rk", "body-send-and-receive-exchange-rk", messagePostProcessor));
 
     verify(messagePostProcessor).postProcessMessage(any(Message.class));
-    verify(amqpMessagingSpanManager).beforeSend(any(Message.class), eq("unknown"));
+    verify(amqpMessagingSpanManager).beforeSend(any(Message.class), eq("amqp:exchange/rk"));
     verify(amqpMessagingSpanManager).afterSend(any(NullPointerException.class));
   }
 }

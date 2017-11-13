@@ -72,7 +72,7 @@ public class AmqpMessagingSpanInjector implements SpanInjector {
       AmqpMessageHeaderAccessor accessor,
       String traceIdHeader,
       String spanIdHeader,
-      String parentIdHeader,
+      String spanParentIdHeader,
       String spanNameHeader,
       String processIdHeader,
       String spanSampledHeader,
@@ -83,7 +83,7 @@ public class AmqpMessagingSpanInjector implements SpanInjector {
       addAnnotations(this.traceKeys, initialMessage, span);
       final Long parentId = getFirst(span.getParents());
       if (parentId != null) {
-        addHeader(parentIdHeader, Span.idToHex(parentId), accessor);
+        addHeader(spanParentIdHeader, Span.idToHex(parentId), accessor);
       }
       addHeader(spanNameHeader, span.getName(), accessor);
       addHeader(processIdHeader, span.getProcessId(), accessor);

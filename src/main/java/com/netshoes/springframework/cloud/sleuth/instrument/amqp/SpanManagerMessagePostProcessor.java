@@ -13,20 +13,22 @@ import org.springframework.amqp.core.MessagePostProcessor;
  */
 public class SpanManagerMessagePostProcessor implements MessagePostProcessor {
   private final AmqpMessagingSpanManager spanManager;
+  private final String spanName;
 
   /**
    * Creates a new instance.
    *
    * @param spanManager AMQP span messaging manager
+   * @param spanName Name of Span
    */
-  public SpanManagerMessagePostProcessor(AmqpMessagingSpanManager spanManager) {
+  public SpanManagerMessagePostProcessor(AmqpMessagingSpanManager spanManager, String spanName) {
     this.spanManager = spanManager;
+    this.spanName = spanName;
   }
 
   @Override
   public Message postProcessMessage(Message message) throws AmqpException {
-    // TODO Discover exchange before POST message
-    spanManager.beforeSend(message, "unknown");
+    spanManager.beforeSend(message, spanName);
     return message;
   }
 }

@@ -56,9 +56,9 @@ public class DefaultAmqpMessagingSpanManager implements AmqpMessagingSpanManager
   }
 
   @Override
-  public Span beforeSend(Message message, String exchange) {
+  public Span beforeSend(Message message, String spanName) {
     final Span parentSpan = tracer.isTracing() ? tracer.getCurrentSpan() : buildSpan(message);
-    final Span span = tracer.createSpan(exchange, parentSpan);
+    final Span span = tracer.createSpan(spanName, parentSpan);
     final AmqpMessageHeaderAccessor accessor = AmqpMessageHeaderAccessor.getAccessor(message);
     if (accessor.hasHeader(MESSAGE_SENT_FROM_CLIENT)) {
       span.logEvent(Span.SERVER_RECV);

@@ -1,14 +1,15 @@
 package com.netshoes.springframework.cloud.sleuth.instrument.amqp.mock;
 
+import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.AmqpException;
-import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessagePostProcessor;
 import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.core.ReceiveAndReplyCallback;
 import org.springframework.amqp.core.ReplyToAddressCallback;
+import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.MessageConverter;
 
@@ -17,14 +18,19 @@ import org.springframework.amqp.support.converter.MessageConverter;
  *
  * @version 1.0
  */
-public class AmqpTemplateMock implements AmqpTemplate {
-  private final Logger logger = LoggerFactory.getLogger(AmqpTemplateMock.class);
+public class RabbitTemplateMock extends RabbitTemplate {
+  private final Logger logger = LoggerFactory.getLogger(RabbitTemplateMock.class);
   private final AmqpTemplateMockManager mockManager;
   private final MessageConverter messageConverter;
 
-  public AmqpTemplateMock(AmqpTemplateMockManager mockManager, MessageConverter messageConverter) {
+  public RabbitTemplateMock(
+      AmqpTemplateMockManager mockManager,
+      MessageConverter messageConverter,
+      String defaultExchange) {
     this.mockManager = mockManager;
     this.messageConverter = messageConverter;
+    this.setConnectionFactory(Mockito.mock(ConnectionFactory.class));
+    this.setExchange(defaultExchange);
   }
 
   @Override
