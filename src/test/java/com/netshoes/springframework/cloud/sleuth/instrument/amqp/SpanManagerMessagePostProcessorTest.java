@@ -25,7 +25,7 @@ public class SpanManagerMessagePostProcessorTest {
 
   @Before
   public void setup() {
-    postProcessor = new SpanManagerMessagePostProcessor(spanManager);
+    postProcessor = new SpanManagerMessagePostProcessor(spanManager, "my-exchange");
   }
 
   @Test

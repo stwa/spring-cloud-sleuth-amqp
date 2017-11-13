@@ -13,7 +13,7 @@ public interface AmqpMessagingSpanManager {
 
   void afterHandle(Exception ex);
 
-  Span beforeSend(Message message, String exchange);
+  Span beforeSend(Message message, String spanName);
 
   void afterSend(Exception ex);
 }

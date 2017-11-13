@@ -1,11 +1,11 @@
 package com.netshoes.springframework.cloud.sleuth.instrument.amqp;
 
-import com.netshoes.springframework.cloud.sleuth.instrument.amqp.mock.AmqpTemplateMock;
 import com.netshoes.springframework.cloud.sleuth.instrument.amqp.mock.AmqpTemplateMockManager;
 import com.netshoes.springframework.cloud.sleuth.instrument.amqp.mock.RabbitListenerMock;
 import com.netshoes.springframework.cloud.sleuth.instrument.amqp.mock.RabbitListenerMockManager;
+import com.netshoes.springframework.cloud.sleuth.instrument.amqp.mock.RabbitTemplateMock;
 import org.mockito.Mockito;
-import org.springframework.amqp.core.AmqpTemplate;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.ContentTypeDelegatingMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.boot.SpringBootConfiguration;
@@ -32,9 +32,9 @@ public class SpringTestConfiguration {
   }
 
   @Bean
-  public AmqpTemplate rabbitTemplate(
+  public RabbitTemplate rabbitTemplate(
       AmqpTemplateMockManager mockManager, MessageConverter messageConverter) {
-    return new AmqpTemplateMock(mockManager, messageConverter);
+    return new RabbitTemplateMock(mockManager, messageConverter, "my-default-exchange");
   }
 
   @Bean
@@ -45,13 +45,12 @@ public class SpringTestConfiguration {
   @Bean
   public SpanManagerMessagePostProcessor amqpMessagingBeforePublishPostProcessor(
       AmqpMessagingSpanManager spanManager) {
-    return new SpanManagerMessagePostProcessor(spanManager);
+    return new SpanManagerMessagePostProcessor(spanManager, "my-exchange");
   }
 
   @Bean
-  public AmqpTemplateAspect amqpTemplateAspect(
-      AmqpMessagingSpanManager spanManager, SpanManagerMessagePostProcessor postProcessor) {
-    return new AmqpTemplateAspect(spanManager, postProcessor);
+  public AmqpTemplateAspect amqpTemplateAspect(AmqpMessagingSpanManager spanManager) {
+    return new AmqpTemplateAspect(spanManager);
   }
 
   @Bean
