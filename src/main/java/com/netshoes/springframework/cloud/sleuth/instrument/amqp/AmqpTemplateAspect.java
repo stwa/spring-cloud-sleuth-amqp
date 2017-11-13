@@ -22,7 +22,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 public class AmqpTemplateAspect {
   private static final String CONVERT_AND_SEND = "convertAndSend";
   private static final String UNKNOWN_EXCHANGE = "unknown-exchange";
-  private static final String SPAN_NAME_PREFIX = "amqp:";
+  private static final String SPAN_NAME_PREFIX = "amqp://";
   private final AmqpMessagingSpanManager spanManager;
 
   /**
