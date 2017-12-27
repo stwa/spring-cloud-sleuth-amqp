@@ -28,7 +28,7 @@ public class RabbitListenerAspect {
   }
 
   @Around("@annotation(org.springframework.amqp.rabbit.annotation.RabbitListener)")
-  public void executeAroundRabbitListenerAnnotation(ProceedingJoinPoint call) throws Throwable {
+  public Object executeAroundRabbitListenerAnnotation(ProceedingJoinPoint call) throws Throwable {
     final Object[] args = call.getArgs();
     final Message message = getMessageArgument(args);
     final String[] queueNames = getQueueNames(call);
@@ -36,12 +36,14 @@ public class RabbitListenerAspect {
       spanManager.beforeHandle(message, queueNames);
     }
     try {
-      call.proceed();
+      Object result = call.proceed();
+      spanManager.afterHandle(null);
+
+      return result;
     } catch (Exception e) {
       spanManager.afterHandle(e);
       throw e;
     }
-    spanManager.afterHandle(null);
   }
 
   /**

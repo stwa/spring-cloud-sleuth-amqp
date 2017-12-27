@@ -23,4 +23,13 @@ public class RabbitListenerMock {
     mockManager.throwExceptionIfConfigured();
     logger.info("Message {} received.", String.valueOf(message.getBody()));
   }
+
+  @RabbitListener(queues = "test-queue-with-reply")
+  public Message onMessageWithReply(Message message) {
+
+    mockManager.throwExceptionIfConfigured();
+    logger.info("Message {} received.", String.valueOf(message.getBody()));
+
+    return message;
+  }
 }
