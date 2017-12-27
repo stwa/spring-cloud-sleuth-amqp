@@ -114,7 +114,9 @@ public class AmqpTemplateAspectTest {
 
     final Message message =
         new Message("body-send-and-receive".getBytes(), new MessageProperties());
-    amqpTemplate.sendAndReceive(message);
+    Message replyMessage = amqpTemplate.sendAndReceive(message);
+
+    Assert.assertEquals(replyMessage, message);
 
     verify(amqpMessagingSpanManager).beforeSend(eq(message), eq("amqp://my-default-exchange/*"));
     verify(amqpMessagingSpanManager).afterSend(eq(null));
