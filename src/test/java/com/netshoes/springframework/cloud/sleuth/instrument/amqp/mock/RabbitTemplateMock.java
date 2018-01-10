@@ -214,14 +214,14 @@ public class RabbitTemplateMock extends RabbitTemplate {
   public Message sendAndReceive(Message message) throws AmqpException {
     mockManager.throwExceptionIfConfigured();
     logger.debug("sendAndReceive: {}", message);
-    return null;
+    return message;
   }
 
   @Override
   public Message sendAndReceive(String routingKey, Message message) throws AmqpException {
     mockManager.throwExceptionIfConfigured();
     logger.debug("sendAndReceive: {} {}", routingKey, message);
-    return null;
+    return message;
   }
 
   @Override
@@ -229,21 +229,21 @@ public class RabbitTemplateMock extends RabbitTemplate {
       throws AmqpException {
     mockManager.throwExceptionIfConfigured();
     logger.debug("sendAndReceive: {} {} {}", exchange, routingKey, message);
-    return null;
+    return message;
   }
 
   @Override
   public Object convertSendAndReceive(Object message) throws AmqpException {
     mockManager.throwExceptionIfConfigured();
     logger.debug("convertSendAndReceive: {}", message);
-    return null;
+    return message;
   }
 
   @Override
   public Object convertSendAndReceive(String routingKey, Object message) throws AmqpException {
     mockManager.throwExceptionIfConfigured();
     logger.debug("convertSendAndReceive: {} {}", routingKey, message);
-    return null;
+    return message;
   }
 
   @Override
@@ -251,7 +251,7 @@ public class RabbitTemplateMock extends RabbitTemplate {
       throws AmqpException {
     mockManager.throwExceptionIfConfigured();
     logger.debug("convertSendAndReceive: {} {} {}", exchange, routingKey, message);
-    return null;
+    return message;
   }
 
   @Override
@@ -259,7 +259,7 @@ public class RabbitTemplateMock extends RabbitTemplate {
       throws AmqpException {
     mockManager.throwExceptionIfConfigured();
     logger.debug("convertSendAndReceive: {} {}", message, messagePostProcessor);
-    return null;
+    return message;
   }
 
   @Override
@@ -268,7 +268,7 @@ public class RabbitTemplateMock extends RabbitTemplate {
       throws AmqpException {
     mockManager.throwExceptionIfConfigured();
     logger.debug("convertSendAndReceive: {} {}", routingKey, message, messagePostProcessor);
-    return null;
+    return message;
   }
 
   @Override
@@ -278,7 +278,7 @@ public class RabbitTemplateMock extends RabbitTemplate {
     mockManager.throwExceptionIfConfigured();
     logger.debug(
         "convertSendAndReceive: {} {}", exchange, routingKey, message, messagePostProcessor);
-    return null;
+    return message;
   }
 
   protected Message convertMessageIfNecessary(final Object object) {

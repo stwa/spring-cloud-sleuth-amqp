@@ -64,4 +64,12 @@ public class RabbitListenerAspectTest {
     final String[] queues = captor.getValue();
     assertEquals("test-queue", queues[0]);
   }
+
+  @Test
+  public void aspectInvokeSuccessWithReply() throws Throwable {
+    assertNotNull(rabbitListenerMock);
+    final Message message = new Message("body3".getBytes(), new MessageProperties());
+    final Message replyMessage = rabbitListenerMock.onMessageWithReply(message);
+    assertEquals(replyMessage, message);
+  }
 }

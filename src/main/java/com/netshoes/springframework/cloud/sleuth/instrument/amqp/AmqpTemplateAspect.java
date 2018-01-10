@@ -40,8 +40,8 @@ public class AmqpTemplateAspect {
   }
 
   @Around("execution(* org.springframework.amqp.core.AmqpTemplate.sendAndReceive(..))")
-  public void executeAroundSendAndReceive(ProceedingJoinPoint call) throws Throwable {
-    executeWithoutPostProcessor(call, ArgumentDiscover.from(call));
+  public Object executeAroundSendAndReceive(ProceedingJoinPoint call) throws Throwable {
+    return executeWithoutPostProcessor(call, ArgumentDiscover.from(call));
   }
 
   @Around("execution(* org.springframework.amqp.core.AmqpTemplate.convertAndSend(Object))")
@@ -135,7 +135,7 @@ public class AmqpTemplateAspect {
     }
   }
 
-  private void executeWithoutPostProcessor(
+  private Object executeWithoutPostProcessor(
       ProceedingJoinPoint call, ArgumentDiscover argumentDiscover) throws Throwable {
     final Object[] args = call.getArgs();
     final Message message = argumentDiscover.message;
@@ -143,12 +143,13 @@ public class AmqpTemplateAspect {
     final String routingKey = argumentDiscover.routingKey;
     before(message, exchange, routingKey);
     try {
-      call.proceed(args);
+      Object result = call.proceed(args);
+      spanManager.afterSend(null);
+      return result;
     } catch (Exception e) {
       spanManager.afterSend(e);
       throw e;
     }
-    spanManager.afterSend(null);
   }
 
   private boolean changeExecutionOfMethodToUsePostProcessor(
