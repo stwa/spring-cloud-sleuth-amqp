@@ -1,9 +1,6 @@
 package com.netshoes.springframework.cloud.sleuth.instrument.amqp;
 
-import com.netshoes.springframework.cloud.sleuth.instrument.amqp.mock.AmqpTemplateMockManager;
-import com.netshoes.springframework.cloud.sleuth.instrument.amqp.mock.RabbitListenerMock;
-import com.netshoes.springframework.cloud.sleuth.instrument.amqp.mock.RabbitListenerMockManager;
-import com.netshoes.springframework.cloud.sleuth.instrument.amqp.mock.RabbitTemplateMock;
+import com.netshoes.springframework.cloud.sleuth.instrument.amqp.mock.*;
 import org.mockito.Mockito;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.ContentTypeDelegatingMessageConverter;
@@ -67,4 +64,20 @@ public class SpringTestConfiguration {
   public RabbitListenerMockManager rabbitListenerMockManager() {
     return new RabbitListenerMockManager();
   }
+
+  @Bean
+  public RabbitHandlerMock rabbitHandlerListener(RabbitHandlerMockManager mockManager) {
+    return new RabbitHandlerMock(mockManager);
+  }
+
+  @Bean
+  public RabbitHandlerAspect rabbitHandlerAspect(AmqpMessagingSpanManager spanManager) {
+    return new RabbitHandlerAspect(spanManager);
+  }
+
+  @Bean
+  public RabbitHandlerMockManager rabbitHandlerMockManager() {
+    return new RabbitHandlerMockManager();
+  }
+
 }
