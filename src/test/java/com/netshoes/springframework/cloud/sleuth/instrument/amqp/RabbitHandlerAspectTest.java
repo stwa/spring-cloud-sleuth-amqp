@@ -1,12 +1,9 @@
 package com.netshoes.springframework.cloud.sleuth.instrument.amqp;
 
 import com.netshoes.springframework.cloud.sleuth.instrument.amqp.mock.RabbitHandlerMock;
-import com.netshoes.springframework.cloud.sleuth.instrument.amqp.mock.RabbitHandlerMockManager;
-import com.netshoes.springframework.cloud.sleuth.instrument.amqp.mock.RabbitListenerMockManager;
+import com.netshoes.springframework.cloud.sleuth.instrument.amqp.mock.RabbitAspectMockManager;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,9 +31,8 @@ import static org.mockito.Mockito.verify;
 public class RabbitHandlerAspectTest {
 
   @Autowired private RabbitHandlerMock rabbitHandlerMock;
-  @Autowired private RabbitHandlerMockManager mockManager;
+  @Autowired private RabbitAspectMockManager mockManager;
   @Autowired private AmqpMessagingSpanManager amqpMessagingSpanManager;
-  @Captor private ArgumentCaptor<String[]> captor;
 
   @Test
   public void aspectInvokeSuccess() throws Throwable {
@@ -44,11 +40,8 @@ public class RabbitHandlerAspectTest {
     final Message message = new Message("body1".getBytes(), new MessageProperties());
     rabbitHandlerMock.onMessage(message);
 
-    verify(amqpMessagingSpanManager).beforeHandle(eq(message), captor.capture());
+    verify(amqpMessagingSpanManager).beforeHandle(eq(message));
     verify(amqpMessagingSpanManager).afterHandle(eq(null));
-
-    final String[] queues = captor.getValue();
-    assertEquals("test-handler-queue", queues[0]);
   }
 
   @Test
@@ -60,11 +53,8 @@ public class RabbitHandlerAspectTest {
     assertThatThrownBy(() -> rabbitHandlerMock.onMessage(message))
         .isInstanceOf(NullPointerException.class);
 
-    verify(amqpMessagingSpanManager).beforeHandle(eq(message), captor.capture());
+    verify(amqpMessagingSpanManager).beforeHandle(eq(message));
     verify(amqpMessagingSpanManager).afterHandle(any(NullPointerException.class));
-
-    final String[] queues = captor.getValue();
-    assertEquals("test-handler-queue", queues[0]);
   }
 
   @Test
@@ -74,5 +64,4 @@ public class RabbitHandlerAspectTest {
     final Message replyMessage = rabbitHandlerMock.onMessageWithReply(message);
     assertEquals(replyMessage, message);
   }
-
 }

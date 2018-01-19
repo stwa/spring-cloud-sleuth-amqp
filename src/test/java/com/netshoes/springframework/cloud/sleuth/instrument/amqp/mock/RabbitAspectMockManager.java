@@ -1,6 +1,6 @@
 package com.netshoes.springframework.cloud.sleuth.instrument.amqp.mock;
 
-public class RabbitHandlerMockManager {
+public class RabbitAspectMockManager {
   private boolean throwException = false;
   private RuntimeException exception;
 

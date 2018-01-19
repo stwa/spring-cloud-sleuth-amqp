@@ -1,12 +1,9 @@
 package com.netshoes.springframework.cloud.sleuth.instrument.amqp;
 
 import org.aopalliance.intercept.MethodInvocation;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -21,7 +18,6 @@ import org.springframework.amqp.core.Message;
 @RunWith(MockitoJUnitRunner.class)
 public class AmqpMessagingBeforeReceiveInterceptorTest {
   @Mock private AmqpMessagingSpanManager spanManager;
-  @Captor private ArgumentCaptor<String[]> queueNamesCaptor;
 
   private AmqpMessagingBeforeReceiveInterceptor interceptor;
 
@@ -39,8 +35,7 @@ public class AmqpMessagingBeforeReceiveInterceptorTest {
     interceptor.invoke(invocation);
     Mockito.verify(invocation).proceed();
 
-    Mockito.verify(spanManager).beforeHandle(Matchers.eq(message), queueNamesCaptor.capture());
-    Assert.assertEquals("amqp", queueNamesCaptor.getValue()[0]);
+    Mockito.verify(spanManager).beforeHandle(Matchers.eq(message));
   }
 
   @Test
@@ -51,10 +46,8 @@ public class AmqpMessagingBeforeReceiveInterceptorTest {
 
     interceptor.invoke(invocation);
 
-    Mockito.verify(spanManager).beforeHandle(Matchers.eq(message), queueNamesCaptor.capture());
+    Mockito.verify(spanManager).beforeHandle(Matchers.eq(message));
     Mockito.verify(invocation).proceed();
-
-    Assert.assertEquals("amqp", queueNamesCaptor.getValue()[0]);
   }
 
   @Test(expected = IllegalStateException.class)

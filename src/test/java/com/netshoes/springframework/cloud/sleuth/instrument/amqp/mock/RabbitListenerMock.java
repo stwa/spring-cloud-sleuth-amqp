@@ -12,9 +12,9 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
  */
 public class RabbitListenerMock {
   private final Logger logger = LoggerFactory.getLogger(RabbitListenerMock.class);
-  private final RabbitListenerMockManager mockManager;
+  private final RabbitAspectMockManager mockManager;
 
-  public RabbitListenerMock(RabbitListenerMockManager mockManager) {
+  public RabbitListenerMock(RabbitAspectMockManager mockManager) {
     this.mockManager = mockManager;
   }
 

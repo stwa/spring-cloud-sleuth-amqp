@@ -1,6 +1,10 @@
 package com.netshoes.springframework.cloud.sleuth.instrument.amqp;
 
-import com.netshoes.springframework.cloud.sleuth.instrument.amqp.mock.*;
+import com.netshoes.springframework.cloud.sleuth.instrument.amqp.mock.AmqpTemplateMockManager;
+import com.netshoes.springframework.cloud.sleuth.instrument.amqp.mock.RabbitHandlerMock;
+import com.netshoes.springframework.cloud.sleuth.instrument.amqp.mock.RabbitAspectMockManager;
+import com.netshoes.springframework.cloud.sleuth.instrument.amqp.mock.RabbitListenerMock;
+import com.netshoes.springframework.cloud.sleuth.instrument.amqp.mock.RabbitTemplateMock;
 import org.mockito.Mockito;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.ContentTypeDelegatingMessageConverter;
@@ -19,7 +23,7 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 public class SpringTestConfiguration {
 
   @Bean
-  public RabbitListenerMock rabbitListener(RabbitListenerMockManager mockManager) {
+  public RabbitListenerMock rabbitListener(RabbitAspectMockManager mockManager) {
     return new RabbitListenerMock(mockManager);
   }
 
@@ -61,12 +65,7 @@ public class SpringTestConfiguration {
   }
 
   @Bean
-  public RabbitListenerMockManager rabbitListenerMockManager() {
-    return new RabbitListenerMockManager();
-  }
-
-  @Bean
-  public RabbitHandlerMock rabbitHandlerListener(RabbitHandlerMockManager mockManager) {
+  public RabbitHandlerMock rabbitHandlerListener(RabbitAspectMockManager mockManager) {
     return new RabbitHandlerMock(mockManager);
   }
 
@@ -76,8 +75,7 @@ public class SpringTestConfiguration {
   }
 
   @Bean
-  public RabbitHandlerMockManager rabbitHandlerMockManager() {
-    return new RabbitHandlerMockManager();
+  public RabbitAspectMockManager rabbitAspectMockManager() {
+    return new RabbitAspectMockManager();
   }
-
 }

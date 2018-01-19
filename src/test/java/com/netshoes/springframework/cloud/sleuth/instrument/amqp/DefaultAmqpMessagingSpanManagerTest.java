@@ -53,8 +53,7 @@ public class DefaultAmqpMessagingSpanManagerTest {
     when(tracer.continueSpan(eq(currentSpan))).thenReturn(newSpan);
 
     final Message message = new Message("Test".getBytes(), null);
-    final String[] queueNames = new String[] {"queue"};
-    final Span span = spanManager.beforeHandle(message, queueNames);
+    final Span span = spanManager.beforeHandle(message);
 
     verify(currentSpan).logEvent(eq(Span.SERVER_RECV));
     verify(extractor).joinTrace(eq(message));
@@ -72,8 +71,7 @@ public class DefaultAmqpMessagingSpanManagerTest {
     when(tracer.continueSpan(eq(currentSpan))).thenReturn(newSpan);
 
     final Message message = new Message("Test".getBytes(), null);
-    final String[] queueNames = new String[] {"queue1", "queue2"};
-    final Span span = spanManager.beforeHandle(message, queueNames);
+    final Span span = spanManager.beforeHandle(message);
 
     verify(currentSpan).logEvent(eq(Span.SERVER_RECV));
     verify(extractor).joinTrace(eq(message));
