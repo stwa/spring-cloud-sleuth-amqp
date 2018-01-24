@@ -34,7 +34,7 @@ public class RabbitListenerAspectTest {
   @Autowired private AmqpMessagingSpanManager amqpMessagingSpanManager;
 
   @Test
-  public void aspectInvokeSuccess() throws Throwable {
+  public void aspectInvokeSuccess() {
     assertNotNull(rabbitListenerMock);
     final Message message = new Message("body1".getBytes(), new MessageProperties());
     rabbitListenerMock.onMessage(message);
@@ -44,7 +44,7 @@ public class RabbitListenerAspectTest {
   }
 
   @Test
-  public void aspectInvokeError() throws Throwable {
+  public void aspectInvokeError() {
     assertNotNull(rabbitListenerMock);
     mockManager.throwExceptionInNextMessage(new NullPointerException());
 
@@ -57,7 +57,7 @@ public class RabbitListenerAspectTest {
   }
 
   @Test
-  public void aspectInvokeSuccessWithReply() throws Throwable {
+  public void aspectInvokeSuccessWithReply() {
     assertNotNull(rabbitListenerMock);
     final Message message = new Message("body3".getBytes(), new MessageProperties());
     final Message replyMessage = rabbitListenerMock.onMessageWithReply(message);

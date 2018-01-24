@@ -1,7 +1,14 @@
 package com.netshoes.springframework.cloud.sleuth.instrument.amqp;
 
-import com.netshoes.springframework.cloud.sleuth.instrument.amqp.mock.RabbitHandlerMock;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.verify;
+
 import com.netshoes.springframework.cloud.sleuth.instrument.amqp.mock.RabbitAspectMockManager;
+import com.netshoes.springframework.cloud.sleuth.instrument.amqp.mock.RabbitHandlerMock;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.amqp.core.Message;
@@ -11,13 +18,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.junit4.SpringRunner;
-
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.verify;
 
 /**
  * Unit tests for {@link RabbitHandlerAspect}.
@@ -35,7 +35,7 @@ public class RabbitHandlerAspectTest {
   @Autowired private AmqpMessagingSpanManager amqpMessagingSpanManager;
 
   @Test
-  public void aspectInvokeSuccess() throws Throwable {
+  public void aspectInvokeSuccess() {
     assertNotNull(rabbitHandlerMock);
     final Message message = new Message("body1".getBytes(), new MessageProperties());
     rabbitHandlerMock.onMessage(message);
@@ -45,7 +45,7 @@ public class RabbitHandlerAspectTest {
   }
 
   @Test
-  public void aspectInvokeError() throws Throwable {
+  public void aspectInvokeError() {
     assertNotNull(rabbitHandlerMock);
     mockManager.throwExceptionInNextMessage(new NullPointerException());
 
@@ -58,7 +58,7 @@ public class RabbitHandlerAspectTest {
   }
 
   @Test
-  public void aspectInvokeSuccessWithReply() throws Throwable {
+  public void aspectInvokeSuccessWithReply() {
     assertNotNull(rabbitHandlerMock);
     final Message message = new Message("body3".getBytes(), new MessageProperties());
     final Message replyMessage = rabbitHandlerMock.onMessageWithReply(message);

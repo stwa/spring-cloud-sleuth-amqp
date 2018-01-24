@@ -35,7 +35,7 @@ public class AmqpTemplateAspectTest {
   @Mock private MessagePostProcessor messagePostProcessor;
 
   @Test
-  public void aspectInvokeSendSuccess() throws Throwable {
+  public void aspectInvokeSendSuccess() {
     Assert.assertNotNull(amqpTemplate);
 
     final Message message = new Message("body-send".getBytes(), new MessageProperties());
@@ -46,7 +46,7 @@ public class AmqpTemplateAspectTest {
   }
 
   @Test
-  public void aspectInvokeSendError() throws Throwable {
+  public void aspectInvokeSendError() {
     Assert.assertNotNull(amqpTemplate);
     mockManager.throwExceptionInNextMethodCall(new NullPointerException());
 
@@ -59,7 +59,7 @@ public class AmqpTemplateAspectTest {
   }
 
   @Test
-  public void aspectInvokeSendWithRoutingKeySuccess() throws Throwable {
+  public void aspectInvokeSendWithRoutingKeySuccess() {
     Assert.assertNotNull(amqpTemplate);
 
     final Message message = new Message("body-send-rk".getBytes(), new MessageProperties());
@@ -70,7 +70,7 @@ public class AmqpTemplateAspectTest {
   }
 
   @Test
-  public void aspectInvokeSendWithRoutingKeError() throws Throwable {
+  public void aspectInvokeSendWithRoutingKeError() {
     Assert.assertNotNull(amqpTemplate);
     mockManager.throwExceptionInNextMethodCall(new NullPointerException());
 
@@ -84,7 +84,7 @@ public class AmqpTemplateAspectTest {
   }
 
   @Test
-  public void aspectInvokeSendWithRoutingKeyAndExchangeSuccess() throws Throwable {
+  public void aspectInvokeSendWithRoutingKeyAndExchangeSuccess() {
     Assert.assertNotNull(amqpTemplate);
 
     final Message message =
@@ -96,7 +96,7 @@ public class AmqpTemplateAspectTest {
   }
 
   @Test
-  public void aspectInvokeSendWithRoutingKeyAndExchangeError() throws Throwable {
+  public void aspectInvokeSendWithRoutingKeyAndExchangeError() {
     Assert.assertNotNull(amqpTemplate);
     mockManager.throwExceptionInNextMethodCall(new NullPointerException());
 
@@ -109,7 +109,7 @@ public class AmqpTemplateAspectTest {
   }
 
   @Test
-  public void aspectInvokeSendAndReceiveSuccess() throws Throwable {
+  public void aspectInvokeSendAndReceiveSuccess() {
     Assert.assertNotNull(amqpTemplate);
 
     final Message message =
@@ -123,7 +123,7 @@ public class AmqpTemplateAspectTest {
   }
 
   @Test
-  public void aspectInvokeSendAndReceiveError() throws Throwable {
+  public void aspectInvokeSendAndReceiveError() {
     Assert.assertNotNull(amqpTemplate);
     mockManager.throwExceptionInNextMethodCall(new NullPointerException());
 
@@ -136,7 +136,7 @@ public class AmqpTemplateAspectTest {
   }
 
   @Test
-  public void aspectInvokeSendAndReceiveWithRoutingKeySuccess() throws Throwable {
+  public void aspectInvokeSendAndReceiveWithRoutingKeySuccess() {
     Assert.assertNotNull(amqpTemplate);
 
     final Message message =
@@ -148,7 +148,7 @@ public class AmqpTemplateAspectTest {
   }
 
   @Test
-  public void aspectInvokeSendAndReceiveWithRoutingKeyError() throws Throwable {
+  public void aspectInvokeSendAndReceiveWithRoutingKeyError() {
     Assert.assertNotNull(amqpTemplate);
     mockManager.throwExceptionInNextMethodCall(new NullPointerException());
 
@@ -161,7 +161,7 @@ public class AmqpTemplateAspectTest {
   }
 
   @Test
-  public void aspectInvokeSendAndReceiveWithRoutingKeyAndExchangeSuccess() throws Throwable {
+  public void aspectInvokeSendAndReceiveWithRoutingKeyAndExchangeSuccess() {
     Assert.assertNotNull(amqpTemplate);
 
     final Message message =
@@ -173,7 +173,7 @@ public class AmqpTemplateAspectTest {
   }
 
   @Test
-  public void aspectInvokeSendAndReceiveWithRoutingKeyAndExchangeError() throws Throwable {
+  public void aspectInvokeSendAndReceiveWithRoutingKeyAndExchangeError() {
     Assert.assertNotNull(amqpTemplate);
     mockManager.throwExceptionInNextMethodCall(new NullPointerException());
 
@@ -186,7 +186,7 @@ public class AmqpTemplateAspectTest {
   }
 
   @Test
-  public void aspectInvokeConvertAndSendSuccess() throws Throwable {
+  public void aspectInvokeConvertAndSendSuccess() {
     Assert.assertNotNull(amqpTemplate);
 
     amqpTemplate.convertAndSend("body-convert-and-send");
@@ -197,7 +197,7 @@ public class AmqpTemplateAspectTest {
   }
 
   @Test
-  public void aspectInvokeConvertAndSendError() throws Throwable {
+  public void aspectInvokeConvertAndSendError() {
     Assert.assertNotNull(amqpTemplate);
     mockManager.throwExceptionInNextMethodCall(new NullPointerException());
 
@@ -209,7 +209,7 @@ public class AmqpTemplateAspectTest {
   }
 
   @Test
-  public void aspectInvokeConvertAndSendWithRoutingKeySuccess() throws Throwable {
+  public void aspectInvokeConvertAndSendWithRoutingKeySuccess() {
     Assert.assertNotNull(amqpTemplate);
 
     amqpTemplate.convertAndSend("rk", "body-convert-and-send-rk");
@@ -220,7 +220,7 @@ public class AmqpTemplateAspectTest {
   }
 
   @Test
-  public void aspectInvokeConvertAndSendWithRoutingKeyError() throws Throwable {
+  public void aspectInvokeConvertAndSendWithRoutingKeyError() {
     Assert.assertNotNull(amqpTemplate);
     mockManager.throwExceptionInNextMethodCall(new NullPointerException());
 
@@ -232,7 +232,7 @@ public class AmqpTemplateAspectTest {
   }
 
   @Test
-  public void aspectInvokeConvertAndSendWithRoutingKeyAndExchangeSuccess() throws Throwable {
+  public void aspectInvokeConvertAndSendWithRoutingKeyAndExchangeSuccess() {
     Assert.assertNotNull(amqpTemplate);
 
     amqpTemplate.convertAndSend("exchange", "rk", "body-send-and-receive-exchange-rk");
@@ -242,7 +242,7 @@ public class AmqpTemplateAspectTest {
   }
 
   @Test
-  public void aspectInvokeConvertAndSendWithRoutingKeyAndExchangeError() throws Throwable {
+  public void aspectInvokeConvertAndSendWithRoutingKeyAndExchangeError() {
     Assert.assertNotNull(amqpTemplate);
     mockManager.throwExceptionInNextMethodCall(new NullPointerException());
 
@@ -254,7 +254,7 @@ public class AmqpTemplateAspectTest {
   }
 
   @Test
-  public void aspectInvokeConvertAndSendWithPostProcessorSuccess() throws Throwable {
+  public void aspectInvokeConvertAndSendWithPostProcessorSuccess() {
     Assert.assertNotNull(amqpTemplate);
 
     amqpTemplate.convertAndSend((Object) "body-convert-and-send", messagePostProcessor);
@@ -266,7 +266,7 @@ public class AmqpTemplateAspectTest {
   }
 
   @Test
-  public void aspectInvokeConvertAndSendWithPostProcessorError() throws Throwable {
+  public void aspectInvokeConvertAndSendWithPostProcessorError() {
     Assert.assertNotNull(amqpTemplate);
     mockManager.throwExceptionInNextMethodCall(new NullPointerException());
 
@@ -280,7 +280,7 @@ public class AmqpTemplateAspectTest {
   }
 
   @Test
-  public void aspectInvokeConvertAndSendWithRoutingKeyAndPostProcessorSuccess() throws Throwable {
+  public void aspectInvokeConvertAndSendWithRoutingKeyAndPostProcessorSuccess() {
     Assert.assertNotNull(amqpTemplate);
 
     amqpTemplate.convertAndSend("rk", (Object) "body-convert-and-send-rk", messagePostProcessor);
@@ -292,7 +292,7 @@ public class AmqpTemplateAspectTest {
   }
 
   @Test
-  public void aspectInvokeConvertAndSendWithRoutingKeyAndPostProcessorError() throws Throwable {
+  public void aspectInvokeConvertAndSendWithRoutingKeyAndPostProcessorError() {
     Assert.assertNotNull(amqpTemplate);
     mockManager.throwExceptionInNextMethodCall(new NullPointerException());
 
@@ -308,8 +308,7 @@ public class AmqpTemplateAspectTest {
   }
 
   @Test
-  public void aspectInvokeConvertAndSendWithRoutingKeyAndExchangeAndPostProcessorSuccess()
-      throws Throwable {
+  public void aspectInvokeConvertAndSendWithRoutingKeyAndExchangeAndPostProcessorSuccess() {
     Assert.assertNotNull(amqpTemplate);
 
     amqpTemplate.convertAndSend(
@@ -321,8 +320,7 @@ public class AmqpTemplateAspectTest {
   }
 
   @Test
-  public void aspectInvokeConvertAndSendWithRoutingKeyAndExchangeAndPostProcessorError()
-      throws Throwable {
+  public void aspectInvokeConvertAndSendWithRoutingKeyAndExchangeAndPostProcessorError() {
     Assert.assertNotNull(amqpTemplate);
     mockManager.throwExceptionInNextMethodCall(new NullPointerException());
 
