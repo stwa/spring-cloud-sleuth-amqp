@@ -1,4 +1,4 @@
-package com.netshoes.springframework.cloud.sleuth.instrument.amqp.mock;
+package com.netshoes.springframework.cloud.sleuth.test.boot.instrument.amqp.mock;
 
 import org.mockito.Mockito;
 import org.slf4j.Logger;

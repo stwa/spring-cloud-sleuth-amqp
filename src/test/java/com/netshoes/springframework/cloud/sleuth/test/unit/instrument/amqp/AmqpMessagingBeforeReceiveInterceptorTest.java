@@ -1,5 +1,7 @@
-package com.netshoes.springframework.cloud.sleuth.instrument.amqp;
+package com.netshoes.springframework.cloud.sleuth.test.unit.instrument.amqp;
 
+import com.netshoes.springframework.cloud.sleuth.instrument.amqp.AmqpMessagingBeforeReceiveInterceptor;
+import com.netshoes.springframework.cloud.sleuth.instrument.amqp.AmqpMessagingSpanManager;
 import org.aopalliance.intercept.MethodInvocation;
 import org.junit.Before;
 import org.junit.Test;

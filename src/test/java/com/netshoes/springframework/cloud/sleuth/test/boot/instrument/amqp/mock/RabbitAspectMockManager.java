@@ -1,6 +1,6 @@
-package com.netshoes.springframework.cloud.sleuth.instrument.amqp.mock;
+package com.netshoes.springframework.cloud.sleuth.test.boot.instrument.amqp.mock;
 
-public class AmqpTemplateMockManager {
+public class RabbitAspectMockManager {
   private boolean throwException = false;
   private RuntimeException exception;
 
@@ -11,7 +11,7 @@ public class AmqpTemplateMockManager {
     }
   }
 
-  public void throwExceptionInNextMethodCall(RuntimeException e) {
+  public void throwExceptionInNextMessage(RuntimeException e) {
     this.exception = e;
     this.throwException = true;
   }

@@ -1,5 +1,6 @@
-package com.netshoes.springframework.cloud.sleuth.instrument.amqp;
+package com.netshoes.springframework.cloud.sleuth.test.unit.instrument.amqp;
 
+import com.netshoes.springframework.cloud.sleuth.instrument.amqp.AmqpMessagingSpanExtractor;
 import java.util.Random;
 import org.junit.Assert;
 import org.junit.Before;

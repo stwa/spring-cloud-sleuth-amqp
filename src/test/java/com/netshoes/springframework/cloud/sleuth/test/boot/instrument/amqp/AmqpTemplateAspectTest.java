@@ -1,11 +1,13 @@
-package com.netshoes.springframework.cloud.sleuth.instrument.amqp;
+package com.netshoes.springframework.cloud.sleuth.test.boot.instrument.amqp;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 
-import com.netshoes.springframework.cloud.sleuth.instrument.amqp.mock.AmqpTemplateMockManager;
+import com.netshoes.springframework.cloud.sleuth.instrument.amqp.AmqpMessagingSpanManager;
+import com.netshoes.springframework.cloud.sleuth.instrument.amqp.AmqpTemplateAspect;
+import com.netshoes.springframework.cloud.sleuth.test.boot.instrument.amqp.mock.AmqpTemplateMockManager;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;

@@ -1,4 +1,4 @@
-package com.netshoes.springframework.cloud.sleuth.instrument.amqp;
+package com.netshoes.springframework.cloud.sleuth.test.boot.instrument.amqp;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.assertEquals;
@@ -7,8 +7,10 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 
-import com.netshoes.springframework.cloud.sleuth.instrument.amqp.mock.RabbitAspectMockManager;
-import com.netshoes.springframework.cloud.sleuth.instrument.amqp.mock.RabbitHandlerMock;
+import com.netshoes.springframework.cloud.sleuth.instrument.amqp.AmqpMessagingSpanManager;
+import com.netshoes.springframework.cloud.sleuth.instrument.amqp.RabbitHandlerAspect;
+import com.netshoes.springframework.cloud.sleuth.test.boot.instrument.amqp.mock.RabbitAspectMockManager;
+import com.netshoes.springframework.cloud.sleuth.test.boot.instrument.amqp.mock.RabbitHandlerMock;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.amqp.core.Message;

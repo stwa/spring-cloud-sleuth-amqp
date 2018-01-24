@@ -1,8 +1,10 @@
-package com.netshoes.springframework.cloud.sleuth.instrument.amqp;
+package com.netshoes.springframework.cloud.sleuth.test.unit.instrument.amqp;
 
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.verify;
 
+import com.netshoes.springframework.cloud.sleuth.instrument.amqp.AmqpMessagingSpanManager;
+import com.netshoes.springframework.cloud.sleuth.instrument.amqp.SpanManagerMessagePostProcessor;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

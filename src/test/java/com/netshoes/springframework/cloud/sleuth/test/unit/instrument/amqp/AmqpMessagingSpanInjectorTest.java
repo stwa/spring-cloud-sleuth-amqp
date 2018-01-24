@@ -1,5 +1,6 @@
-package com.netshoes.springframework.cloud.sleuth.instrument.amqp;
+package com.netshoes.springframework.cloud.sleuth.test.unit.instrument.amqp;
 
+import com.netshoes.springframework.cloud.sleuth.instrument.amqp.AmqpMessagingSpanInjector;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
