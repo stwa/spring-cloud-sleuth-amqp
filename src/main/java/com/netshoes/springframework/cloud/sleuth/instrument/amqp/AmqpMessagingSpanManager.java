@@ -9,7 +9,7 @@ import org.springframework.cloud.sleuth.Span;
  * @author André Ignacio
  */
 public interface AmqpMessagingSpanManager {
-  Span beforeHandle(Message message, String[] queueNames);
+  Span beforeHandle(Message message);
 
   void afterHandle(Exception ex);
 

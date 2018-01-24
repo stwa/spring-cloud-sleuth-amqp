@@ -47,7 +47,7 @@ public class DefaultAmqpMessagingSpanManager implements AmqpMessagingSpanManager
   }
 
   @Override
-  public Span beforeHandle(Message message, String[] queues) {
+  public Span beforeHandle(Message message) {
     final Span span = extractor.joinTrace(message);
     if (span != null) {
       span.logEvent(Span.SERVER_RECV);
