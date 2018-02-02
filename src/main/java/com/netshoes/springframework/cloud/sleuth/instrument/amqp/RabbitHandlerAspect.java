@@ -15,7 +15,7 @@ import org.springframework.amqp.core.Message;
  * @since 0.9
  */
 @Aspect
-public class RabbitHandlerAspect extends AbstractRabbitAspect {
+public class RabbitHandlerAspect extends AbstractRabbitMessageReceiverAspect {
 
   /**
    * Creates a new instance.
@@ -28,6 +28,6 @@ public class RabbitHandlerAspect extends AbstractRabbitAspect {
 
   @Around("@annotation(org.springframework.amqp.rabbit.annotation.RabbitHandler)")
   public Object executeAroundRabbitHandlerAnnotation(ProceedingJoinPoint call) throws Throwable {
-    return super.executeAround(call);
+    return super.executeAroundMessageReceive(call);
   }
 }

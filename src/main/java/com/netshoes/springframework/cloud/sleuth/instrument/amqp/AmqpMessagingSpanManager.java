@@ -17,4 +17,6 @@ public interface AmqpMessagingSpanManager {
   Span beforeSend(Message message, String spanName);
 
   void afterSend(Exception ex);
+
+  boolean isTracing();
 }

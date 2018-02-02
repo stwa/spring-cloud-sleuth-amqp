@@ -36,6 +36,11 @@ public class DefaultAmqpMessagingSpanManager implements AmqpMessagingSpanManager
   }
 
   @Override
+  public boolean isTracing() {
+    return tracer.isTracing();
+  }
+
+  @Override
   public void afterHandle(Exception ex) {
     final Span currentSpan = tracer.getCurrentSpan();
     if (currentSpan != null) {
