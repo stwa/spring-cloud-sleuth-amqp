@@ -12,7 +12,7 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 /**
  * Mocked implementation for a Rabbit handler.
  *
- * @version 1.0
+ * @since 0.9
  */
 @RabbitListener(
   bindings = {

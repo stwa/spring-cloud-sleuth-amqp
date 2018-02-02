@@ -27,6 +27,7 @@ import org.springframework.test.context.junit4.SpringRunner;
  *
  * @author André Ignacio
  * @author Dominik Bartholdi
+ * @since 0.9
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest

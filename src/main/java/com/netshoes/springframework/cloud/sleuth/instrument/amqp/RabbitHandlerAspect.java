@@ -12,6 +12,7 @@ import org.springframework.amqp.core.Message;
  *
  * @author André Ignacio
  * @author Dominik Bartholdi
+ * @since 0.9
  */
 @Aspect
 public class RabbitHandlerAspect extends AbstractRabbitAspect {
