@@ -11,6 +11,7 @@ import org.springframework.amqp.core.Message;
  *
  * @author André Ignacio
  * @author Dominik Bartholdi
+ * @since 0.9
  */
 public abstract class AbstractRabbitAspect {
   private final AmqpMessagingSpanManager spanManager;
