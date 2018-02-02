@@ -13,6 +13,7 @@ import org.springframework.cloud.sleuth.util.ExceptionUtils;
  * from {@link Tracer}.
  *
  * @author André Ignacio
+ * @since 0.8
  */
 public class DefaultAmqpMessagingSpanManager implements AmqpMessagingSpanManager {
   private static final String MESSAGE_SENT_FROM_CLIENT = "messageSent";
