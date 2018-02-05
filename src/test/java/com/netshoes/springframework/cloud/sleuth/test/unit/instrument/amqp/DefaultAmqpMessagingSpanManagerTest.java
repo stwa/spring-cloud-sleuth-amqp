@@ -16,6 +16,7 @@ import com.netshoes.springframework.cloud.sleuth.instrument.amqp.DefaultAmqpMess
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -243,6 +244,20 @@ public class DefaultAmqpMessagingSpanManagerTest {
     spanManager.afterSend(null);
 
     verify(tracer).close(eq(null));
+  }
+
+  @Test
+  public void testIsTracingWhenIsTrue() {
+    when(tracer.isTracing()).thenReturn(true);
+
+    Assert.assertTrue(spanManager.isTracing());
+  }
+
+  @Test
+  public void testIsTracingWhenIsFalse() {
+    when(tracer.isTracing()).thenReturn(false);
+
+    Assert.assertFalse(spanManager.isTracing());
   }
 
   private List<Log> getListFromOne(String event) {

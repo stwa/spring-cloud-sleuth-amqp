@@ -2,7 +2,6 @@ package com.netshoes.springframework.cloud.sleuth.test.boot.instrument.amqp.mock
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.Exchange;
 import org.springframework.amqp.rabbit.annotation.Queue;
 import org.springframework.amqp.rabbit.annotation.QueueBinding;
@@ -32,17 +31,8 @@ public class RabbitHandlerMock {
   }
 
   @RabbitHandler
-  public void onMessage(Message message) {
+  public void onMessage(String stringMessage) {
     mockManager.throwExceptionIfConfigured();
-    logger.info("Message {} received.", String.valueOf(message.getBody()));
-  }
-
-  @RabbitHandler
-  public Message onMessageWithReply(Message message) {
-
-    mockManager.throwExceptionIfConfigured();
-    logger.info("Message {} received.", String.valueOf(message.getBody()));
-
-    return message;
+    logger.info("Message {} received.", stringMessage);
   }
 }

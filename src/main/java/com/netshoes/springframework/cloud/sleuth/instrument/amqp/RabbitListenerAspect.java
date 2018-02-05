@@ -3,17 +3,16 @@ package com.netshoes.springframework.cloud.sleuth.instrument.amqp;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 
 /**
- * This Aspect intercept methods annotated with {@link RabbitListener} and invoke {@link
- * AmqpMessagingSpanManager#beforeHandle(Message)} with {@link Message}.
+ * This Aspect intercept methods annotated with {@link RabbitListener} for add tracing information
+ * when a {@link org.springframework.amqp.support.converter.MessageConverter} isn't necessary.
  *
  * @author André Ignacio
  */
 @Aspect
-public class RabbitListenerAspect extends AbstractRabbitAspect {
+public class RabbitListenerAspect extends AbstractRabbitMessageReceiverAspect {
 
   /**
    * Creates a new instance.
@@ -26,6 +25,6 @@ public class RabbitListenerAspect extends AbstractRabbitAspect {
 
   @Around("@annotation(org.springframework.amqp.rabbit.annotation.RabbitListener)")
   public Object executeAroundRabbitListenerAnnotation(ProceedingJoinPoint call) throws Throwable {
-    return super.executeAround(call);
+    return super.executeAroundMessageReceive(call);
   }
 }

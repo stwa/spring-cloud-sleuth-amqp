@@ -2,13 +2,14 @@ package com.netshoes.springframework.cloud.sleuth.test.boot.instrument.amqp;
 
 import com.netshoes.springframework.cloud.sleuth.instrument.amqp.AmqpMessagingSpanManager;
 import com.netshoes.springframework.cloud.sleuth.instrument.amqp.AmqpTemplateAspect;
+import com.netshoes.springframework.cloud.sleuth.instrument.amqp.MessageConverterAspect;
 import com.netshoes.springframework.cloud.sleuth.instrument.amqp.RabbitListenerAspect;
 import com.netshoes.springframework.cloud.sleuth.instrument.amqp.SpanManagerMessagePostProcessor;
 import com.netshoes.springframework.cloud.sleuth.test.boot.instrument.amqp.mock.AmqpTemplateMockManager;
 import com.netshoes.springframework.cloud.sleuth.test.boot.instrument.amqp.mock.RabbitTemplateMock;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.amqp.support.converter.ContentTypeDelegatingMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
+import org.springframework.amqp.support.converter.SimpleMessageConverter;
 import org.springframework.context.annotation.Bean;
 
 /**
@@ -17,11 +18,6 @@ import org.springframework.context.annotation.Bean;
  * @author André Ignacio
  */
 public class SpringSimpleTestConfiguration {
-
-  @Bean
-  public MessageConverter messageConverter() {
-    return new ContentTypeDelegatingMessageConverter();
-  }
 
   @Bean
   public RabbitTemplate rabbitTemplate(
@@ -37,6 +33,11 @@ public class SpringSimpleTestConfiguration {
   @Bean
   public AmqpTemplateAspect amqpTemplateAspect(AmqpMessagingSpanManager spanManager) {
     return new AmqpTemplateAspect(spanManager);
+  }
+
+  @Bean
+  public MessageConverterAspect messageConverterAspect(AmqpMessagingSpanManager spanManager) {
+    return new MessageConverterAspect(spanManager);
   }
 
   @Bean

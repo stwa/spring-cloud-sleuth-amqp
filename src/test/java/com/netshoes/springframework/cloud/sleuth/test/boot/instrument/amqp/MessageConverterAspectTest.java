@@ -1,16 +1,12 @@
 package com.netshoes.springframework.cloud.sleuth.test.boot.instrument.amqp;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 
 import com.netshoes.springframework.cloud.sleuth.instrument.amqp.AmqpMessagingSpanManager;
-import com.netshoes.springframework.cloud.sleuth.instrument.amqp.RabbitListenerAspect;
 import com.netshoes.springframework.cloud.sleuth.test.boot.instrument.amqp.mock.RabbitAspectMockManager;
-import com.netshoes.springframework.cloud.sleuth.test.boot.instrument.amqp.mock.RabbitListenerMock;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.amqp.core.Message;
@@ -24,9 +20,10 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
 /**
- * Unit tests for {@link RabbitListenerAspect}.
+ * Unit tests for {@link MessageConverterAspectTest}.
  *
  * @author André Ignacio
+ * @since 0.9
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -34,17 +31,17 @@ import org.springframework.test.context.junit4.SpringRunner;
   classes = {SpringSimpleTestConfiguration.class, SpringMockTestConfiguration.class}
 )
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
-public class RabbitListenerAspectTest extends AbstractMessageReceiverTest {
+public class MessageConverterAspectTest {
 
-  @Autowired private RabbitListenerMock rabbitListenerMock;
-  @Autowired private RabbitAspectMockManager mockManager;
   @Autowired private AmqpMessagingSpanManager amqpMessagingSpanManager;
+  @Autowired private RabbitAspectMockManager mockManager;
+  @Autowired private MessageConverter messageConverter;
 
   @Test
   public void aspectInvokeSuccess() {
-    assertNotNull(rabbitListenerMock);
     final Message message = new Message("body1".getBytes(), new MessageProperties());
-    rabbitListenerMock.onMessage(message);
+
+    messageConverter.fromMessage(message);
 
     verify(amqpMessagingSpanManager).beforeHandle(eq(message));
     verify(amqpMessagingSpanManager).afterHandle(eq(null));
@@ -52,35 +49,13 @@ public class RabbitListenerAspectTest extends AbstractMessageReceiverTest {
 
   @Test
   public void aspectInvokeError() {
-    assertNotNull(rabbitListenerMock);
     mockManager.throwExceptionInNextMessage(new NullPointerException());
 
     final Message message = new Message("body2".getBytes(), new MessageProperties());
-    assertThatThrownBy(() -> rabbitListenerMock.onMessage(message))
+    assertThatThrownBy(() -> messageConverter.fromMessage(message))
         .isInstanceOf(NullPointerException.class);
 
     verify(amqpMessagingSpanManager).beforeHandle(eq(message));
     verify(amqpMessagingSpanManager).afterHandle(any(NullPointerException.class));
-  }
-
-  @Test
-  public void aspectInvokeSuccessWithReply() {
-    assertNotNull(rabbitListenerMock);
-    final Message message = new Message("body3".getBytes(), new MessageProperties());
-    final Message replyMessage = rabbitListenerMock.onMessageWithReply(message);
-    assertEquals(replyMessage, message);
-  }
-
-  @Test
-  public void aspectInvokeWithConverterSuccess() {
-    assertNotNull(rabbitListenerMock);
-
-    final Message message = mockSendMessageBehavior("body4");
-    final String convertedMessage = mockMessagingMessageListenerAdapterBehaviour(message);
-
-    rabbitListenerMock.onMessage(convertedMessage);
-
-    verify(amqpMessagingSpanManager).beforeHandle(eq(message));
-    verify(amqpMessagingSpanManager).afterHandle(eq(null));
   }
 }
