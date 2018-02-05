@@ -6,11 +6,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.Message;
 
 /**
- * This abstract Aspect is used to intercept methods annotated with {@link
- * org.springframework.amqp.rabbit.annotation.RabbitListener} and {@link
- * org.springframework.amqp.rabbit.annotation.RabbitHandler} and invoke {@link
- * AmqpMessagingSpanManager#beforeHandle(Message)} with {@link Message}.
+ * This abstract class is used to execute methods {@link
+ * AmqpMessagingSpanManager}#beforeHandle(Message)} and {@link
+ * AmqpMessagingSpanManager#afterHandle(Exception)} around a method.
  *
+ * @see RabbitListenerAspect
+ * @see RabbitHandlerAspect
  * @author André Ignacio
  * @author Dominik Bartholdi
  * @since 0.9
@@ -28,6 +29,14 @@ public abstract class AbstractRabbitMessageReceiverAspect {
     this.spanManager = spanManager;
   }
 
+  /**
+   * Execute methods {@link AmqpMessagingSpanManager}#beforeHandle(Message)} and {@link
+   * AmqpMessagingSpanManager#afterHandle(Exception)} around a method.
+   *
+   * @param call AspectJ join point
+   * @return Response of method
+   * @throws Throwable
+   */
   protected Object executeAroundMessageReceive(ProceedingJoinPoint call) throws Throwable {
     final Object result;
     final Object[] args = call.getArgs();

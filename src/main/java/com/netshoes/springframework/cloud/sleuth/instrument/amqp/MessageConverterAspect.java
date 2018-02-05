@@ -3,12 +3,10 @@ package com.netshoes.springframework.cloud.sleuth.instrument.amqp;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.springframework.amqp.core.Message;
 
 /**
- * This Aspect intercept method fromMessage of {@link
- * org.springframework.amqp.support.converter.MessageConverter} and invoke {@link
- * AmqpMessagingSpanManager#beforeHandle(Message)} with {@link Message}.
+ * This Aspect add tracing information when a {@link
+ * org.springframework.amqp.support.converter.MessageConverter} is used.
  *
  * @author André Ignacio
  * @since 0.9

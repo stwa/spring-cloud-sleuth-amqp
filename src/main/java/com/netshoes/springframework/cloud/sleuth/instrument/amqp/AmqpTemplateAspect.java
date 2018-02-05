@@ -9,13 +9,9 @@ import org.springframework.amqp.core.MessagePostProcessor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
 /**
- * Aspect responsible for get the current {@link Message} before execution of {@link
- * org.springframework.amqp.core.AmqpTemplate} methods and invoke {@link
- * AmqpMessagingSpanManager#beforeSend(Message, String)} and {@link
- * AmqpMessagingSpanManager#afterSend(Exception)}.
+ * Aspect responsible for add tracing information to {@link AmqpTemplate} methods.
  *
  * @see AmqpMessagingSpanManager
- * @see SpanManagerMessagePostProcessor
  * @author André Ignacio
  */
 @Aspect

@@ -15,6 +15,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;
+import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
@@ -33,7 +34,7 @@ import org.springframework.test.context.junit4.SpringRunner;
   classes = {SpringSimpleTestConfiguration.class, SpringMockTestConfiguration.class}
 )
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
-public class RabbitListenerAspectTest {
+public class RabbitListenerAspectTest extends AbstractMessageReceiverTest {
 
   @Autowired private RabbitListenerMock rabbitListenerMock;
   @Autowired private RabbitAspectMockManager mockManager;
@@ -68,5 +69,18 @@ public class RabbitListenerAspectTest {
     final Message message = new Message("body3".getBytes(), new MessageProperties());
     final Message replyMessage = rabbitListenerMock.onMessageWithReply(message);
     assertEquals(replyMessage, message);
+  }
+
+  @Test
+  public void aspectInvokeWithConverterSuccess() {
+    assertNotNull(rabbitListenerMock);
+
+    final Message message = mockSendMessageBehavior("body4");
+    final String convertedMessage = mockMessagingMessageListenerAdapterBehaviour(message);
+
+    rabbitListenerMock.onMessage(convertedMessage);
+
+    verify(amqpMessagingSpanManager).beforeHandle(eq(message));
+    verify(amqpMessagingSpanManager).afterHandle(eq(null));
   }
 }

@@ -13,7 +13,6 @@ import com.netshoes.springframework.cloud.sleuth.test.boot.instrument.amqp.mock.
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.amqp.core.Message;
-import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -35,20 +34,11 @@ import org.springframework.test.context.junit4.SpringRunner;
   classes = {SpringSimpleTestConfiguration.class, SpringMockTestConfiguration.class}
 )
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
-public class RabbitHandlerAspectTest {
+public class RabbitHandlerAspectTest extends AbstractMessageReceiverTest {
 
   @Autowired private RabbitHandlerMock rabbitHandlerMock;
-  @Autowired private MessageConverter messageConverter;
   @Autowired private RabbitAspectMockManager mockManager;
   @Autowired private AmqpMessagingSpanManager amqpMessagingSpanManager;
-
-  private Message mockSendMessageBehavior(String body) {
-    return messageConverter.toMessage(body, new MessageProperties());
-  }
-
-  private String mockMessagingMessageListenerAdapterBehaviour(Message message) {
-    return (String) messageConverter.fromMessage(message);
-  }
 
   @Test
   public void aspectInvokeSuccess() {

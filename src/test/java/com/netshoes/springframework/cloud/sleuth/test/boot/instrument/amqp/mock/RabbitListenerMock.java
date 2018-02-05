@@ -32,4 +32,10 @@ public class RabbitListenerMock {
 
     return message;
   }
+
+  @RabbitListener(queues = "test-queue-with-converter")
+  public void onMessage(String message) {
+    mockManager.throwExceptionIfConfigured();
+    logger.info("Message {} received.", message);
+  }
 }
