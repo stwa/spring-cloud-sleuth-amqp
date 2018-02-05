@@ -8,7 +8,13 @@ The project spring-cloud-sleuth does not provided a instrumentation for spring-r
 # Compatibility
 | spring-cloud-sleuth-amqp          | spring-cloud-sleuth | spring-rabbit |
 | --------------------------------- | ------------------- | ------------- |
-| 0.8.4                             | 1.2.1.RELEASE       | 1.7.3.RELEASE |
+| 0.9                               | 1.2.1.RELEASE       | 1.7.3.RELEASE |
+
+
+# Features
+* Adds and manages tracing (Span and Trace) to methods send() and sendAndReceive() in RabbitTemplate
+* Gets and manages tracing (Span and Trace) from methods annotated with @RabbitListener
+* Gets and manages tracing (Span and Trace) from methods annotated with @RabbitHandler
 
 # Usage
 Add the following dependency to project:
@@ -16,7 +22,7 @@ Add the following dependency to project:
 <dependency>
   <groupId>com.netshoes</groupId>
   <artifactId>spring-cloud-sleuth-amqp</artifactId>
-  <version>0.8.4</version>
+  <version>0.9</version>
 </dependency>
 ```
 
