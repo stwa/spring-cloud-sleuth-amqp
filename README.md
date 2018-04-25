@@ -8,6 +8,7 @@ The project spring-cloud-sleuth does not provided a instrumentation for spring-r
 # Compatibility
 | spring-cloud-sleuth-amqp          | spring-cloud-sleuth | spring-rabbit |
 | --------------------------------- | ------------------- | ------------- |
+| 0.10                              | 1.2.6.RELEASE       | 1.7.7.RELEASE |
 | 0.9                               | 1.2.1.RELEASE       | 1.7.3.RELEASE |
 
 
@@ -22,7 +23,7 @@ Add the following dependency to project:
 <dependency>
   <groupId>com.netshoes</groupId>
   <artifactId>spring-cloud-sleuth-amqp</artifactId>
-  <version>0.9</version>
+  <version>0.10</version>
 </dependency>
 ```
 
